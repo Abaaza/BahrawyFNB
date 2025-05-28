@@ -23,6 +23,11 @@ nav ul {
 nav a {
   text-decoration: none;
   color: #333;
+  padding: 0.25rem 0.5rem;
+}
+
+nav a.active {
+  border-bottom: 2px solid #008080;
 }
 
 .hero {
@@ -36,6 +41,11 @@ nav a {
   padding: 40px 20px;
   text-align: center;
 }
+main {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
 
 .footer {
   background: #f0f0f0;

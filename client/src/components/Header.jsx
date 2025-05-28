@@ -1,4 +1,6 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
+
 
 function Header({ onNavigate }) {
   return (
@@ -7,11 +9,11 @@ function Header({ onNavigate }) {
       <img src="https://via.placeholder.com/120x40?text=Treated+Web" alt="Treated Web" />
       <nav>
         <ul>
-          <li><a href="#" onClick={() => onNavigate('Home')}>Home</a></li>
-          <li><a href="#" onClick={() => onNavigate('About')}>About Us</a></li>
-          <li><a href="#" onClick={() => onNavigate('Services')}>Services</a></li>
-          <li><a href="#" onClick={() => onNavigate('Contact')}>Contact</a></li>
-          <li><button onClick={() => onNavigate('Home')}>Get Started</button></li>
+            <li><NavLink to="/" className={({ isActive }) => isActive ? 'active' : ''}>Home</NavLink></li>
+          <li><NavLink to="/about" className={({ isActive }) => isActive ? 'active' : ''}>About Us</NavLink></li>
+          <li><NavLink to="/services" className={({ isActive }) => isActive ? 'active' : ''}>Services</NavLink></li>
+          <li><NavLink to="/contact" className={({ isActive }) => isActive ? 'active' : ''}>Contact</NavLink></li>
+          <li><NavLink to="/" className={({ isActive }) => isActive ? 'active' : ''}>Get Started</NavLink></li>
         </ul>
       </nav>
     </header>

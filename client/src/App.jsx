@@ -1,48 +1,29 @@
-import { useState } from 'react';
-import './App.css';
-import Header from './components/Header.jsx';
-import Footer from './components/Footer.jsx';
-import Home from './pages/Home.jsx';
-import AboutUs from './pages/AboutUs.jsx';
-import Services from './pages/Services.jsx';
-import TreatmentPlanning from './pages/TreatmentPlanning.jsx';
-import MarketingServices from './pages/MarketingServices.jsx';
-import Contact from './pages/Contact.jsx';
+import React, { Suspense, lazy } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import Layout from './layout/Layout.jsx';
+
+const Home = lazy(() => import('./pages/Home.jsx'));
+const AboutUs = lazy(() => import('./pages/AboutUs.jsx'));
+const Services = lazy(() => import('./pages/Services.jsx'));
+const TreatmentPlanning = lazy(() => import('./pages/TreatmentPlanning.jsx'));
+const MarketingServices = lazy(() => import('./pages/MarketingServices.jsx'));
+const Contact = lazy(() => import('./pages/Contact.jsx'));
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('Home');
-
-  let PageComponent;
-  switch (currentPage) {
-    case 'About':
-      PageComponent = AboutUs;
-      break;
-    case 'Services':
-      PageComponent = Services;
-      break;
-    case 'Treatment':
-      PageComponent = TreatmentPlanning;
-      break;
-    case 'Marketing':
-      PageComponent = MarketingServices;
-      break;
-    case 'Contact':
-      PageComponent = Contact;
-      break;
-    default:
-      PageComponent = Home;
-  }
 
   return (
-    <>
-   <Header onNavigate={setCurrentPage} />
-      <main id="main">
-
-        <PageComponent />
-      </main>
-            <Footer />
-
-    </>
+  <Suspense fallback={<div>Loading...</div>}>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="about" element={<AboutUs />} />
+          <Route path="services" element={<Services />} />
+          <Route path="treatment" element={<TreatmentPlanning />} />
+          <Route path="marketing" element={<MarketingServices />} />
+          <Route path="contact" element={<Contact />} />
+        </Route>
+      </Routes>
+    </Suspense>
   );
 }
 
