@@ -53,3 +53,22 @@ nav a {
 .newsletter {
   margin: 20px 0;
 }
+
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.skip-link:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 8px;
+  background: #000;
+  color: #fff;
+  z-index: 1000;
+}

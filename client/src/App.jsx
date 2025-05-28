@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import './App.css';
+import Header from './components/Header.jsx';
+import Footer from './components/Footer.jsx';
 import Home from './pages/Home.jsx';
 import AboutUs from './pages/AboutUs.jsx';
 import Services from './pages/Services.jsx';
@@ -33,23 +35,15 @@ function App() {
 
   return (
     <>
-      <header>
-        <img src="https://via.placeholder.com/120x40?text=Treated+Web" alt="Treated Web" />
-        <nav>
-          <ul>
-            <li><a href="#" onClick={() => setCurrentPage('Home')}>Home</a></li>
-            <li><a href="#" onClick={() => setCurrentPage('About')}>About Us</a></li>
-            <li><a href="#" onClick={() => setCurrentPage('Services')}>Services</a></li>
-            <li><a href="#" onClick={() => setCurrentPage('Treatment')}>Treatment Planning</a></li>
-            <li><a href="#" onClick={() => setCurrentPage('Marketing')}>Marketing Services</a></li>
-            <li><a href="#" onClick={() => setCurrentPage('Contact')}>Contact</a></li>
-          </ul>
-        </nav>
-      </header>
+   <Header onNavigate={setCurrentPage} />
+      <main id="main">
 
-      <main>
         <PageComponent />
       </main>
+            <Footer />
+
     </>
   );
 }
+
+export default App;
