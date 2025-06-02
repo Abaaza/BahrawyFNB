@@ -1,31 +1,50 @@
 const express = require('express');
 const cors = require('cors');
-const serverless = require('serverless-http');  // Required to wrap Express for Lambda
+const serverless = require('serverless-http');
+const crypto = require('crypto');
 
 const {
   getUsers,
   addUser,
   getProjects,
   addProject,
-} = require('./db'); // Make sure this file exists and exports the expected functions
+  getCases,
+  addCase,
+  updateCase,
+  deleteCase,
+} = require('./db');
 
 const app = express();
-const VALID_TOKEN = 'portal-token';  // Simple hardcoded token auth
+const tokens = new Map();
 
 app.use(cors());
 app.use(express.json());
 
-// In-memory storage for demo
-const cases = [];
-let nextId = 1;
-
 // --- Auth Middleware ---
 function auth(req, res, next) {
-  if (req.headers.authorization === `Bearer ${VALID_TOKEN}`) {
-    return next();
+  const header = req.headers.authorization || '';
+  const token = header.replace('Bearer ', '');
+  const user = tokens.get(token);
+  if (!user) {
+    return res.status(401).json({ error: 'Unauthorized' });
   }
-  return res.status(401).json({ error: 'Unauthorized' });
+  req.user = user;
+  return next();
 }
+
+// --- Signup Route ---
+app.post('/portal/signup', (req, res) => {
+  const { username, password, role } = req.body;
+  if (!username || !password || !role) {
+    return res.status(400).json({ error: 'username, password and role required' });
+  }
+  const existing = getUsers().find((u) => u.username === username);
+  if (existing) {
+    return res.status(400).json({ error: 'username taken' });
+  }
+  const user = addUser({ username, password, role });
+  res.status(201).json({ id: user.id });
+});
 
 // --- Login Route ---
 app.post('/portal/login', (req, res) => {
@@ -33,43 +52,50 @@ app.post('/portal/login', (req, res) => {
   const user = getUsers().find(
     (u) => u.username === username && u.password === password
   );
-  if (user) {
-    return res.json({ token: VALID_TOKEN });
+  if (!user) {
+    return res.status(401).json({ error: 'Invalid credentials' });
   }
-  return res.status(401).json({ error: 'Invalid credentials' });
+  const token = crypto.randomBytes(16).toString('hex');
+  tokens.set(token, user);
+  res.json({ token, role: user.role });
 });
 
 // --- Case Management ---
 app.post('/portal/cases', auth, (req, res) => {
-  const { description } = req.body;
-  const newCase = { id: nextId++, description, status: 'open' };
-  cases.push(newCase);
-  res.status(201).json(newCase);
+  const { clinCheckId, photos, link } = req.body;
+  const newCase = {
+    userId: req.user.id,
+    clinCheckId,
+    photos: photos || [],
+    link: link || '',
+    status: 'open',
+    createdAt: Date.now(),
+  };
+  res.status(201).json(addCase(newCase));
 });
 
 app.get('/portal/cases', auth, (req, res) => {
-  res.json(cases);
+  let all = getCases();
+  if (req.user.role === 'dentist') {
+    all = all.filter((c) => c.userId === req.user.id);
+  }
+  res.json(all);
 });
 
 app.put('/portal/cases/:id', auth, (req, res) => {
-  const { id } = req.params;
-  const caseItem = cases.find((c) => c.id === parseInt(id, 10));
-  if (!caseItem) {
+  const id = parseInt(req.params.id, 10);
+  const updated = updateCase(id, req.body);
+  if (!updated) {
     return res.status(404).json({ error: 'Case not found' });
   }
-  const { description, status } = req.body;
-  if (description !== undefined) caseItem.description = description;
-  if (status !== undefined) caseItem.status = status;
-  res.json(caseItem);
+  res.json(updated);
 });
 
 app.delete('/portal/cases/:id', auth, (req, res) => {
-  const { id } = req.params;
-  const index = cases.findIndex((c) => c.id === parseInt(id, 10));
-  if (index === -1) {
+  const id = parseInt(req.params.id, 10);
+  if (!deleteCase(id)) {
     return res.status(404).json({ error: 'Case not found' });
   }
-  cases.splice(index, 1);
   res.status(204).end();
 });
 
@@ -105,5 +131,4 @@ app.get('/api', (req, res) => {
   res.json({ message: 'Hello from Express!' });
 });
 
-// --- Lambda-compatible export ---
 module.exports.handler = serverless(app);

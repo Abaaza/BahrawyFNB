@@ -1,8 +1,25 @@
 {
   "users": [
-    { "id": 1, "username": "demo", "password": "demo123" }
+    {
+      "id": 1,
+      "username": "demo",
+      "password": "demo123",
+      "role": "dentist"
+    },
+    {
+      "id": 2,
+      "username": "specialist",
+      "password": "spec123",
+      "role": "specialist"
+    }
   ],
   "projects": [
-    { "id": 1, "name": "Example Project", "description": "Initial project" }
-  ]
+
+    {
+      "id": 1,
+      "name": "Example Project",
+      "description": "Initial project"
+    }
+  ],
+  "cases": []
 }

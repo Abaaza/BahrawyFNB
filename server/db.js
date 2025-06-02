@@ -5,7 +5,7 @@ const DB_PATH = path.join(__dirname, 'database.json');
 
 function loadDB() {
   if (!fs.existsSync(DB_PATH)) {
-    const initial = { users: [], projects: [] };
+    const initial = { users: [], projects: [], cases: [] };
     fs.writeFileSync(DB_PATH, JSON.stringify(initial, null, 2));
     return initial;
   }
@@ -42,6 +42,38 @@ function addProject(project) {
   return project;
 }
 
+function getCases() {
+  const db = loadDB();
+  return db.cases;
+}
+
+function addCase(caseItem) {
+  const db = loadDB();
+  caseItem.id = db.cases.length ? db.cases[db.cases.length - 1].id + 1 : 1;
+  db.cases.push(caseItem);
+  saveDB(db);
+  return caseItem;
+}
+
+function updateCase(id, updates) {
+  const db = loadDB();
+  const c = db.cases.find((k) => k.id === id);
+  if (!c) return null;
+  Object.assign(c, updates);
+  saveDB(db);
+  return c;
+}
+
+function deleteCase(id) {
+  const db = loadDB();
+  const idx = db.cases.findIndex((c) => c.id === id);
+  if (idx === -1) return false;
+  db.cases.splice(idx, 1);
+  saveDB(db);
+  return true;
+}
+
+
 module.exports = {
   loadDB,
   saveDB,
@@ -49,4 +81,8 @@ module.exports = {
   addUser,
   getProjects,
   addProject,
+  getCases,
+  addCase,
+  updateCase,
+  deleteCase,
 };

@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 
-
 function Portal() {
   const [token, setToken] = useState(null);
+  const [role, setRole] = useState(null);
   const [cases, setCases] = useState([]);
-  const [description, setDescription] = useState('');
+  const [form, setForm] = useState({ clinCheckId: '', link: '', photo: '' });
   const [loginForm, setLoginForm] = useState({ username: '', password: '' });
+  const [signup, setSignup] = useState({ username: '', password: '', role: 'dentist' });
 
   useEffect(() => {
     if (token) {
@@ -31,6 +32,7 @@ function Portal() {
         if (!r.ok) throw new Error('Login failed');
         const data = await r.json();
         setToken(data.token);
+        setRole(data.role);
       })
       .catch(() => {
         alert('Invalid credentials');
@@ -45,12 +47,16 @@ function Portal() {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ description }),
+      body: JSON.stringify({
+        clinCheckId: form.clinCheckId,
+        link: form.link,
+        photos: form.photo ? [form.photo] : [],
+      }),
     })
       .then((r) => r.json())
       .then((newCase) => {
         setCases([...cases, newCase]);
-        setDescription('');
+        setForm({ clinCheckId: '', link: '', photo: '' });
       });
   };
 
@@ -65,31 +71,78 @@ function Portal() {
 
   if (!token) {
     return (
-      <div className="p-4">
-        <h2 className="text-xl font-bold mb-2">Portal Login</h2>
-        <form onSubmit={login} className="space-y-2">
-          <input
-            type="text"
-            placeholder="Username"
-            value={loginForm.username}
-            onChange={(e) =>
-              setLoginForm({ ...loginForm, username: e.target.value })
-            }
-            className="border p-2 block"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={loginForm.password}
-            onChange={(e) =>
-              setLoginForm({ ...loginForm, password: e.target.value })
-            }
-            className="border p-2 block"
-          />
-          <button type="submit" className="bg-blue-500 text-white px-4 py-1">
-            Login
-          </button>
-        </form>
+      <div className="p-4 space-y-4">
+        <div>
+          <h2 className="text-xl font-bold mb-2">Portal Login</h2>
+          <form onSubmit={login} className="space-y-2">
+            <input
+              type="text"
+              placeholder="Username"
+              value={loginForm.username}
+              onChange={(e) =>
+                setLoginForm({ ...loginForm, username: e.target.value })
+              }
+              className="border p-2 block"
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={loginForm.password}
+              onChange={(e) =>
+                setLoginForm({ ...loginForm, password: e.target.value })
+              }
+              className="border p-2 block"
+            />
+            <button type="submit" className="bg-blue-500 text-white px-4 py-1">
+              Login
+            </button>
+          </form>
+        </div>
+        <div>
+          <h2 className="text-xl font-bold mb-2">Sign Up</h2>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              fetch(`${API_BASE}/portal/signup`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(signup),
+              }).then(() => alert('Account created'));
+            }}
+            className="space-y-2"
+          >
+            <input
+              type="text"
+              placeholder="Username"
+              value={signup.username}
+              onChange={(e) =>
+                setSignup({ ...signup, username: e.target.value })
+              }
+              className="border p-2 block"
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={signup.password}
+              onChange={(e) =>
+                setSignup({ ...signup, password: e.target.value })
+              }
+              className="border p-2 block"
+            />
+            <select
+              value={signup.role}
+              onChange={(e) => setSignup({ ...signup, role: e.target.value })}
+              className="border p-2 block"
+            >
+              <option value="dentist">Dentist</option>
+              <option value="specialist">Specialist</option>
+              <option value="admin">Admin</option>
+            </select>
+            <button type="submit" className="bg-green-500 text-white px-4 py-1">
+              Sign Up
+            </button>
+          </form>
+        </div>
       </div>
     );
   }
@@ -100,13 +153,27 @@ function Portal() {
       <form onSubmit={createCase} className="space-y-2 mb-4">
         <input
           type="text"
-          placeholder="Case description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          placeholder="ClinCheck ID"
+          value={form.clinCheckId}
+          onChange={(e) => setForm({ ...form, clinCheckId: e.target.value })}
+          className="border p-2 block"
+        />
+        <input
+          type="text"
+          placeholder="ClinCheck Link"
+          value={form.link}
+          onChange={(e) => setForm({ ...form, link: e.target.value })}
+          className="border p-2 block"
+        />
+        <input
+          type="text"
+          placeholder="Photo URL"
+          value={form.photo}
+          onChange={(e) => setForm({ ...form, photo: e.target.value })}
           className="border p-2 block"
         />
         <button type="submit" className="bg-green-500 text-white px-4 py-1">
-          Start Case
+          Submit Case
         </button>
       </form>
       <ul>
@@ -116,7 +183,7 @@ function Portal() {
             className="border p-2 mb-2 flex justify-between items-center"
           >
             <span>
-              {c.description} - {c.status}
+              {c.clinCheckId} - {c.status}
             </span>
             <button
               onClick={() => closeCase(c.id)}
