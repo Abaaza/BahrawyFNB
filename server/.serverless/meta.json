@@ -1,0 +1,105 @@
+{
+  "C:\\Users\\abaza\\BahrawyFNB\\server\\serverless.yml": {
+    "versionFramework": "4.15.1",
+    "servicePath": "C:\\Users\\abaza\\BahrawyFNB\\server\\serverless.yml",
+    "serviceConfigFileName": "serverless.yml",
+    "service": {
+      "service": "bahrawybackend",
+      "frameworkVersion": "3",
+      "provider": {
+        "name": "aws",
+        "runtime": "nodejs18.x",
+        "region": "me-south-1",
+        "httpApi": {
+          "cors": true
+        },
+        "stage": "dev"
+      },
+      "functions": {
+        "api": {
+          "handler": "index.handler",
+          "events": [
+            {
+              "httpApi": {
+                "path": "/{proxy+}",
+                "method": "ANY"
+              }
+            }
+          ]
+        }
+      },
+      "plugins": [
+        "serverless-offline",
+        "serverless-dotenv-plugin"
+      ],
+      "package": {
+        "patterns": [
+          "!node_modules/.cache/**"
+        ]
+      }
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "nodejs18.x",
+      "region": "me-south-1",
+      "httpApi": {
+        "cors": true
+      },
+      "stage": "dev"
+    },
+    "dashboard": {
+      "isEnabledForService": false,
+      "requiredAuthentication": false,
+      "orgFeaturesInUse": null,
+      "orgObservabilityIntegrations": null,
+      "serviceAppId": null,
+      "serviceProvider": null,
+      "instanceParameters": null
+    },
+    "error": {
+      "message": "The Serverless version (4.15.1) does not satisfy the \"frameworkVersion\" (3) in serverless",
+      "stack": "ServerlessError2: The Serverless version (4.15.1) does not satisfy the \"frameworkVersion\" (3) in serverless\n    at Service.loadServiceFileParam (file:///C:/Users/abaza/.serverless/releases/4.15.1/package/dist/sf-core.js:1242:9195)\n    at Service.load (file:///C:/Users/abaza/.serverless/releases/4.15.1/package/dist/sf-core.js:1242:6837)\n    at Serverless.init (file:///C:/Users/abaza/.serverless/releases/4.15.1/package/dist/sf-core.js:1248:9809)\n    at runFramework (file:///C:/Users/abaza/.serverless/releases/4.15.1/package/dist/sf-core.js:1275:856)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async TraditionalRunner.run (file:///C:/Users/abaza/.serverless/releases/4.15.1/package/dist/sf-core.js:1271:28313)\n    at async route (file:///C:/Users/abaza/.serverless/releases/4.15.1/package/dist/sf-core.js:1302:2779)\n    at async Object.run (file:///C:/Users/abaza/.serverless/releases/4.15.1/package/dist/sf-core.js:1303:3661)\n    at async run2 (file:///C:/Users/abaza/.serverless/releases/4.15.1/package/dist/sf-core.js:1303:4815)",
+      "code": "FRAMEWORK_VERSION_MISMATCH"
+    },
+    "serviceRawFile": "service: bahrawybackend\r\nframeworkVersion: \"3\"\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: nodejs18.x\r\n  region: me-south-1\r\n\r\n  httpApi:\r\n    cors: true\r\n\r\nfunctions:\r\n  api:\r\n    handler: index.handler # <-- THIS IS ALL YOU NEED TO POINT TO index.js\r\n    events:\r\n      - httpApi: # one Lambda handles every route\r\n          path: /{proxy+}\r\n          method: ANY\r\n\r\nplugins:\r\n  - serverless-offline\r\n  - serverless-dotenv-plugin\r\n\r\n\r\npackage:\r\n  patterns:\r\n    - \"!node_modules/.cache/**\" #      exclude cache\r\n",
+    "command": [
+      "deploy"
+    ],
+    "options": {},
+    "orgId": "a4c3fcf6-6062-4e08-9a23-5f3d13322715",
+    "orgName": "abzdevstudio",
+    "userId": "L5k2DKHHCPTHbdxc0y",
+    "userName": "abzdevstudio",
+    "serviceProviderAwsAccountId": "911167890928",
+    "serviceProviderAwsCfStackName": "bahrawybackend-dev",
+    "serviceProviderAwsCfStackId": "arn:aws:cloudformation:me-south-1:911167890928:stack/bahrawybackend-dev/fee1c070-3fdf-11f0-af87-06c7181560a5",
+    "serviceProviderAwsCfStackCreated": "2025-06-02T18:32:53.561Z",
+    "serviceProviderAwsCfStackUpdated": "2025-06-02T18:33:42.609Z",
+    "serviceProviderAwsCfStackStatus": "UPDATE_COMPLETE",
+    "serviceProviderAwsCfStackOutputs": [
+      {
+        "OutputKey": "ApiLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:me-south-1:911167890928:function:bahrawybackend-dev-api:1",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-bahrawybackend-dev-ApiLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "HttpApiId",
+        "OutputValue": "u9x019avhh",
+        "Description": "Id of the HTTP API",
+        "ExportName": "sls-bahrawybackend-dev-HttpApiId"
+      },
+      {
+        "OutputKey": "ServerlessDeploymentBucketName",
+        "OutputValue": "bahrawybackend-dev-serverlessdeploymentbucket-vys9rzunwray",
+        "ExportName": "sls-bahrawybackend-dev-ServerlessDeploymentBucketName"
+      },
+      {
+        "OutputKey": "HttpApiUrl",
+        "OutputValue": "https://u9x019avhh.execute-api.me-south-1.amazonaws.com",
+        "Description": "URL of the HTTP API",
+        "ExportName": "sls-bahrawybackend-dev-HttpApiUrl"
+      }
+    ]
+  }
+}

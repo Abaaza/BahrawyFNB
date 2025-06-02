@@ -37,11 +37,27 @@ function getProjects() {
 
 function addProject(project) {
   const db = loadDB();
+  if (!('photos' in project)) project.photos = [];
   project.id = db.projects.length ? db.projects[db.projects.length - 1].id + 1 : 1;
   db.projects.push(project);
   saveDB(db);
   return project;
 }
+
+function getProject(id) {
+  const db = loadDB();
+  return db.projects.find((p) => p.id === id) || null;
+}
+
+function updateProject(id, updates) {
+  const db = loadDB();
+  const proj = db.projects.find((p) => p.id === id);
+  if (!proj) return null;
+  Object.assign(proj, updates);
+  saveDB(db);
+  return proj;
+}
+
 
 function getCases() {
   const db = loadDB();
@@ -103,7 +119,9 @@ module.exports = {
   getUsers,
   addUser,
   getProjects,
+  getProject,
   addProject,
+  updateProject,
   getCases,
   addCase,
   updateCase,

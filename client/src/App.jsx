@@ -9,6 +9,10 @@ const TreatmentPlanning = lazy(() => import('./pages/TreatmentPlanning.jsx'));
 const MarketingServices = lazy(() => import('./pages/MarketingServices.jsx'));
 const Contact = lazy(() => import('./pages/Contact.jsx'));
 const Portal = lazy(() => import('./pages/Portal.jsx'));
+const Login = lazy(() => import('./pages/Login.jsx'));
+const Register = lazy(() => import('./pages/Register.jsx'));
+const Projects = lazy(() => import('./pages/Projects.jsx'));
+const ProjectDetail = lazy(() => import('./pages/ProjectDetail.jsx'));
 
 
 function App() {
@@ -23,8 +27,12 @@ function App() {
           <Route path="treatment" element={<TreatmentPlanning />} />
           <Route path="marketing" element={<MarketingServices />} />
           <Route path="contact" element={<Contact />} />
-        </Route>
           <Route path="portal" element={<Portal />} />
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+          <Route path="projects" element={<Projects />} />
+          <Route path="projects/:id" element={<ProjectDetail />} />
+         </Route>
       </Routes>
     </Suspense>
   );

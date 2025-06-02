@@ -52,6 +52,36 @@ function Header({ onNavigate }) {
               Contact
             </NavLink>
           </li>
+                    <li>
+            <NavLink
+              to="/projects"
+              className={({ isActive }) =>
+                `${isActive ? 'border-b-2 font-semibold' : ''} hover:text-gray-200`
+              }
+            >
+              Projects
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/portal"
+              className={({ isActive }) =>
+                `${isActive ? 'border-b-2 font-semibold' : ''} hover:text-gray-200`
+              }
+            >
+              Portal
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/login"
+              className={({ isActive }) =>
+                `${isActive ? 'border-b-2 font-semibold' : ''} hover:text-gray-200`
+              }
+            >
+              Login
+            </NavLink>
+          </li>
           <li>
             <NavLink
               to="/"

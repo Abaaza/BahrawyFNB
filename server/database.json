@@ -11,15 +11,120 @@
       "username": "2",
       "password": "2",
       "role": "specialist"
+    },
+    {
+      "id": 3,
+      "username": "3",
+      "password": "3",
+      "role": "dentist"
+    },
+    {
+      "id": 4,
+      "username": "4",
+      "password": "4",
+      "role": "specialist"
     }
   ],
   "projects": [
     {
       "id": 1,
-      "name": "Example Project2",
-      "description": "Initial project2"
+      "name": "Initial Alignment Plan",
+      "description": "Align upper arch",
+      "photos": [
+        "img1.jpg",
+        "img2.jpg"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Deep Bite Correction",
+      "description": "Fix deep overbite",
+      "photos": [
+        "bite1.jpg"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Spacing Case",
+      "description": "Manage anterior spacing",
+      "photos": []
     }
   ],
-  "cases": [],
-  "reviews": []
+  "cases": [
+    {
+      "id": 1,
+      "userId": 1,
+      "clinCheckId": "CC10001",
+      "photos": [
+        "case1_before.jpg",
+        "case1_after.jpg"
+      ],
+      "link": "http://example.com/cc1",
+      "status": "open",
+      "createdAt": 1748899600000
+    },
+    {
+      "id": 2,
+      "userId": 2,
+      "clinCheckId": "CC10002",
+      "photos": [],
+      "link": "http://example.com/cc2",
+      "status": "under review",
+      "createdAt": 1748899700000
+    },
+    {
+      "id": 3,
+      "userId": 3,
+      "clinCheckId": "CC10003",
+      "photos": [
+        "case3.jpg"
+      ],
+      "link": "",
+      "status": "closed",
+      "createdAt": 1748899800000
+    },
+    {
+      "id": 4,
+      "userId": 4,
+      "clinCheckId": "",
+      "photos": [],
+      "link": "",
+      "status": "open",
+      "createdAt": 1748899900000
+    },
+    {
+      "userId": 1,
+      "clinCheckId": "",
+      "photos": [
+        "2"
+      ],
+      "link": "2",
+      "status": "open",
+      "createdAt": 1748899793662,
+      "id": 5
+    }
+  ],
+  "reviews": [
+    {
+      "id": 1,
+      "caseId": 1,
+      "reviewerId": 2,
+      "comments": "Good initial alignment, but needs IPR on 24-25.",
+      "createdAt": 1748900000000
+    },
+    {
+      "id": 2,
+      "caseId": 2,
+      "reviewerId": 4,
+      "comments": "Check bite clearance and rotation on 12.",
+      "createdAt": 1748900100000
+    },
+    {
+      "id": 3,
+      "caseId": 3,
+      "reviewerId": 2,
+      "comments": "Case complete, attachments correctly placed.",
+      "createdAt": 1748900200000
+    }
+  ]
 }

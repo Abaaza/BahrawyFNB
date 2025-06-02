@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getToken, getRole } from '../utils/auth.js';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+const API_BASE = 'http://localhost:3000';
 
 function Portal() {
-  const [token, setToken] = useState(null);
-  const [role, setRole] = useState(null);
+  const [token, setToken] = useState(getToken());
+  const [role, setRole] = useState(getRole());
+  const navigate = useNavigate();
   const [cases, setCases] = useState([]);
   const [statusFilter, setStatusFilter] = useState('');
   const [selectedId, setSelectedId] = useState(null);
   const [caseDetail, setCaseDetail] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [form, setForm] = useState({ clinCheckId: '', link: '', photo: '' });
-  const [loginForm, setLoginForm] = useState({ username: '', password: '' });
-  const [signup, setSignup] = useState({ username: '', password: '', role: 'dentist' });
+
 
   const loadCases = () => {
     fetch(`${API_BASE}/portal/cases`, {
@@ -29,23 +31,6 @@ function Portal() {
     }
   }, [token]);
 
-  const login = (e) => {
-    e.preventDefault();
-    fetch(`${API_BASE}/portal/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(loginForm),
-    })
-      .then(async (r) => {
-        if (!r.ok) throw new Error('Login failed');
-        const data = await r.json();
-        setToken(data.token);
-        setRole(data.role);
-      })
-      .catch(() => {
-        alert('Invalid credentials');
-      });
-  };
 
   const createCase = (e) => {
     e.preventDefault();
@@ -98,75 +83,11 @@ function Portal() {
     }).then(() => loadCases());
   };
 
-  if (!token) {
-    return (
-      <div className="p-4 space-y-4">
-        <div>
-          <h2 className="text-xl font-bold mb-2">Portal Login</h2>
-          <form onSubmit={login} className="space-y-2">
-            <input
-              type="text"
-              placeholder="Username"
-              value={loginForm.username}
-              onChange={(e) => setLoginForm({ ...loginForm, username: e.target.value })}
-              className="border p-2 block"
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={loginForm.password}
-              onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
-              className="border p-2 block"
-            />
-            <button type="submit" className="bg-blue-500 text-white px-4 py-1">
-              Login
-            </button>
-          </form>
-        </div>
-        <div>
-          <h2 className="text-xl font-bold mb-2">Sign Up</h2>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              fetch(`${API_BASE}/portal/signup`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(signup),
-              }).then(() => alert('Account created'));
-            }}
-            className="space-y-2"
-          >
-            <input
-              type="text"
-              placeholder="Username"
-              value={signup.username}
-              onChange={(e) => setSignup({ ...signup, username: e.target.value })}
-              className="border p-2 block"
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={signup.password}
-              onChange={(e) => setSignup({ ...signup, password: e.target.value })}
-              className="border p-2 block"
-            />
-            <select
-              value={signup.role}
-              onChange={(e) => setSignup({ ...signup, role: e.target.value })}
-              className="border p-2 block"
-            >
-              <option value="dentist">Dentist</option>
-              <option value="specialist">Specialist</option>
-              <option value="admin">Admin</option>
-            </select>
-            <button type="submit" className="bg-green-500 text-white px-4 py-1">
-              Sign Up
-            </button>
-          </form>
-        </div>
-      </div>
-    );
-  }
+    useEffect(() => {
+    if (!token) {
+      navigate('/login');
+    }
+  }, [token, navigate]);
 
   return (
     <div className="p-4">
@@ -238,32 +159,38 @@ function Portal() {
           </ul>
         </div>
       )}
-
-      <ul>
-        {cases
-          .filter((c) => !statusFilter || c.status === statusFilter)
-          .map((c) => (
-            <li
-              key={c.id}
-              className="border p-2 mb-2 flex justify-between items-center"
-            >
-              <button
-                type="button"
-                onClick={() => openCase(c.id)}
-                className="underline mr-2"
-              >
-                {c.clinCheckId}
-              </button>
-              <span className="flex-1">{c.status}</span>
-              <button
-                onClick={() => closeCase(c.id)}
-                className="bg-red-500 text-white px-2 py-1"
-              >
-                Close
-              </button>
-            </li>
-          ))}
-      </ul>
+      <table className="min-w-full border">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="border px-2 py-1 text-left">ClinCheck ID</th>
+            <th className="border px-2 py-1 text-left">Status</th>
+            <th className="border px-2 py-1">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {cases
+            .filter((c) => !statusFilter || c.status === statusFilter)
+            .map((c) => (
+              <tr key={c.id} className="border-b">
+                <td className="border px-2 py-1">
+                  <button type="button" onClick={() => openCase(c.id)} className="underline">
+                    {c.clinCheckId}
+                  </button>
+                </td>
+                <td className="border px-2 py-1">{c.status}</td>
+                <td className="border px-2 py-1 text-center">
+                  <button
+                    onClick={() => closeCase(c.id)}
+                    className="bg-red-500 text-white px-2 py-1"
+                  >
+                    Close
+                  </button>
+                </td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
+ 
     </div>
   );
 }
