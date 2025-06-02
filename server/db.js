@@ -5,12 +5,13 @@ const DB_PATH = path.join(__dirname, 'database.json');
 
 function loadDB() {
   if (!fs.existsSync(DB_PATH)) {
-    const initial = { users: [], projects: [], cases: [] };
+    const initial = { users: [], projects: [], cases: [], reviews: [] };
     fs.writeFileSync(DB_PATH, JSON.stringify(initial, null, 2));
     return initial;
   }
-  return JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
-}
+  const data = JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
+  if (!('reviews' in data)) data.reviews = [];
+  return data;}
 
 function saveDB(db) {
   fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
@@ -72,6 +73,28 @@ function deleteCase(id) {
   saveDB(db);
   return true;
 }
+function getCase(id) {
+  const db = loadDB();
+  return db.cases.find((c) => c.id === id) || null;
+}
+
+function getReviews() {
+  const db = loadDB();
+  return db.reviews;
+}
+
+function addReview(review) {
+  const db = loadDB();
+  review.id = db.reviews.length ? db.reviews[db.reviews.length - 1].id + 1 : 1;
+  db.reviews.push(review);
+  saveDB(db);
+  return review;
+}
+
+function getReviewsForCase(caseId) {
+  const db = loadDB();
+  return db.reviews.filter((r) => r.caseId === caseId);
+}
 
 
 module.exports = {
@@ -85,4 +108,8 @@ module.exports = {
   addCase,
   updateCase,
   deleteCase,
+  getCase,
+  getReviews,
+  addReview,
+  getReviewsForCase,
 };

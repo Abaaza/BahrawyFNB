@@ -49,12 +49,23 @@ app.post('/portal/signup', (req, res) => {
 // --- Login Route ---
 app.post('/portal/login', (req, res) => {
   const { username, password } = req.body;
+
+  // --- Hardcoded test user ---
+  if (username === 'testuser' && password === 'testpass') {
+    const testUser = { id: 0, username: 'testuser', role: 'admin' };
+    const token = crypto.randomBytes(16).toString('hex');
+    tokens.set(token, testUser);
+    return res.json({ token, role: testUser.role });
+  }
+
+  // --- Regular user lookup ---
   const user = getUsers().find(
     (u) => u.username === username && u.password === password
   );
   if (!user) {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
+
   const token = crypto.randomBytes(16).toString('hex');
   tokens.set(token, user);
   res.json({ token, role: user.role });
@@ -81,6 +92,77 @@ app.get('/portal/cases', auth, (req, res) => {
   }
   res.json(all);
 });
+
+app.get('/portal/cases/:id', auth, (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const c = getCase(id);
+  if (!c) {
+    return res.status(404).json({ error: 'Case not found' });
+  }
+  if (req.user.role === 'dentist' && c.userId !== req.user.id) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+  res.json(c);
+});
+
+app.post('/portal/cases/:id/assign', auth, (req, res) => {
+  if (req.user.role !== 'specialist') {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+  const id = parseInt(req.params.id, 10);
+  const c = getCase(id);
+  if (!c) {
+    return res.status(404).json({ error: 'Case not found' });
+  }
+  if (c.assignedTo && c.assignedTo !== req.user.id) {
+    return res.status(400).json({ error: 'Case already assigned' });
+  }
+  updateCase(id, { assignedTo: req.user.id, status: 'assigned' });
+  res.json({ assignedTo: req.user.id });
+});
+
+app.get('/portal/queue', auth, (req, res) => {
+  if (req.user.role !== 'specialist') {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+  const queue = getCases().filter((c) => !c.assignedTo);
+  res.json(queue);
+});
+
+app.post('/portal/cases/:id/review', auth, (req, res) => {
+  if (req.user.role !== 'specialist') {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+  const id = parseInt(req.params.id, 10);
+  const c = getCase(id);
+  if (!c) {
+    return res.status(404).json({ error: 'Case not found' });
+  }
+  const { notes, statements } = req.body;
+  const review = addReview({
+    caseId: id,
+    specialistId: req.user.id,
+    notes: notes || '',
+    statements: statements || [],
+    createdAt: Date.now(),
+  });
+  updateCase(id, { status: 'reviewed' });
+  res.status(201).json(review);
+});
+
+app.get('/portal/reviews/:caseId', auth, (req, res) => {
+  const caseId = parseInt(req.params.caseId, 10);
+  const c = getCase(caseId);
+  if (!c) {
+    return res.status(404).json({ error: 'Case not found' });
+  }
+  if (req.user.role === 'dentist' && c.userId !== req.user.id) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+  const list = getReviewsForCase(caseId);
+  res.json(list);
+});
+
 
 app.put('/portal/cases/:id', auth, (req, res) => {
   const id = parseInt(req.params.id, 10);
@@ -131,4 +213,13 @@ app.get('/api', (req, res) => {
   res.json({ message: 'Hello from Express!' });
 });
 
+// --- Export for serverless ---
 module.exports.handler = serverless(app);
+
+// --- Local development support ---
+if (require.main === module) {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`🚀 Server listening on http://localhost:${PORT}`);
+  });
+}
