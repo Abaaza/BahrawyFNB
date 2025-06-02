@@ -1,0 +1,8 @@
+{
+  "users": [
+    { "id": 1, "username": "demo", "password": "demo123" }
+  ],
+  "projects": [
+    { "id": 1, "name": "Example Project", "description": "Initial project" }
+  ]
+}
