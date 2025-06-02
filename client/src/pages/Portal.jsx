@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+
+
 function Portal() {
   const [token, setToken] = useState(null);
   const [cases, setCases] = useState([]);
@@ -8,7 +11,7 @@ function Portal() {
 
   useEffect(() => {
     if (token) {
-      fetch('http://localhost:3001/portal/cases', {
+      fetch(`${API_BASE}/portal/cases`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((r) => r.json())
@@ -19,7 +22,7 @@ function Portal() {
 
   const login = (e) => {
     e.preventDefault();
-    fetch('http://localhost:3001/portal/login', {
+    fetch(`${API_BASE}/portal/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(loginForm),
@@ -36,7 +39,7 @@ function Portal() {
 
   const createCase = (e) => {
     e.preventDefault();
-    fetch('http://localhost:3001/portal/cases', {
+    fetch(`${API_BASE}/portal/cases`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -52,7 +55,7 @@ function Portal() {
   };
 
   const closeCase = (id) => {
-    fetch(`http://localhost:3001/portal/cases/${id}`, {
+    fetch(`${API_BASE}/portal/cases/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },
     }).then(() => {

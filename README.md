@@ -22,3 +22,11 @@ These values are for testing only.
 - `POST /projects` – add a new project (`{ name, description }`)
 
 The existing `/portal` routes for case management continue to work as before.
+
+## Connecting the Frontend
+
+Set `VITE_API_BASE_URL` in `client/.env` to your deployed API URL. Example:
+
+```
+VITE_API_BASE_URL=https://u9x019avhh.execute-api.me-south-1.amazonaws.com
+```
