@@ -8,6 +8,8 @@ const Services = lazy(() => import('./pages/Services.jsx'));
 const TreatmentPlanning = lazy(() => import('./pages/TreatmentPlanning.jsx'));
 const MarketingServices = lazy(() => import('./pages/MarketingServices.jsx'));
 const Contact = lazy(() => import('./pages/Contact.jsx'));
+const Portal = lazy(() => import('./pages/Portal.jsx'));
+
 
 function App() {
 
@@ -22,6 +24,7 @@ function App() {
           <Route path="marketing" element={<MarketingServices />} />
           <Route path="contact" element={<Contact />} />
         </Route>
+          <Route path="portal" element={<Portal />} />
       </Routes>
     </Suspense>
   );
