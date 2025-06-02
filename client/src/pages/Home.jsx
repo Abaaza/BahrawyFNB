@@ -20,7 +20,7 @@ function Home() {
           Streamline your patient workflow with fast, accurate, and compliant
           data entry for Invisalign and iTero systems.
         </p>
-        <h3 className="text-lg font-medium">Treatment Plans</h3>
+        <h3 className="text-lg font-medium">Treatment Plan</h3>
       </section>
 
       <section className="py-12 text-center">
