@@ -1,35 +1,25 @@
 const express = require('express');
 const cors = require('cors');
+const serverless = require('serverless-http');  // Required to wrap Express for Lambda
 
 const {
   getUsers,
   addUser,
   getProjects,
   addProject,
-} = require('./db');
+} = require('./db'); // Make sure this file exists and exports the expected functions
 
 const app = express();
-const PORT = 3001;
+const VALID_TOKEN = 'portal-token';  // Simple hardcoded token auth
 
 app.use(cors());
 app.use(express.json());
 
-// Simple in-memory case storage
-
+// In-memory storage for demo
 const cases = [];
 let nextId = 1;
-const VALID_TOKEN = 'portal-token';
 
-app.post('/portal/login', (req, res) => {
-  const { username, password } = req.body;
-  const user = getUsers().find(
-    (u) => u.username === username && u.password === password
-  );
-  if (user) {    return res.json({ token: VALID_TOKEN });
-  }
-  return res.status(401).json({ error: 'Invalid credentials' });
-});
-
+// --- Auth Middleware ---
 function auth(req, res, next) {
   if (req.headers.authorization === `Bearer ${VALID_TOKEN}`) {
     return next();
@@ -37,6 +27,19 @@ function auth(req, res, next) {
   return res.status(401).json({ error: 'Unauthorized' });
 }
 
+// --- Login Route ---
+app.post('/portal/login', (req, res) => {
+  const { username, password } = req.body;
+  const user = getUsers().find(
+    (u) => u.username === username && u.password === password
+  );
+  if (user) {
+    return res.json({ token: VALID_TOKEN });
+  }
+  return res.status(401).json({ error: 'Invalid credentials' });
+});
+
+// --- Case Management ---
 app.post('/portal/cases', auth, (req, res) => {
   const { description } = req.body;
   const newCase = { id: nextId++, description, status: 'open' };
@@ -70,7 +73,7 @@ app.delete('/portal/cases/:id', auth, (req, res) => {
   res.status(204).end();
 });
 
-// --- User and Project Endpoints ---
+// --- User and Project Management ---
 app.get('/users', (req, res) => {
   res.json(getUsers());
 });
@@ -97,11 +100,10 @@ app.post('/projects', (req, res) => {
   res.status(201).json(project);
 });
 
-
+// --- Test Route ---
 app.get('/api', (req, res) => {
   res.json({ message: 'Hello from Express!' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server listening on http://localhost:${PORT}`);
-});
+// --- Lambda-compatible export ---
+module.exports.handler = serverless(app);

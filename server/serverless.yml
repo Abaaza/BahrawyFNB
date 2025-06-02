@@ -1,0 +1,25 @@
+service: bahrawybackend
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: me-south-1
+
+  httpApi:
+    cors: true
+
+functions:
+  api:
+    handler: index.handler # <-- THIS IS ALL YOU NEED TO POINT TO index.js
+    events:
+      - httpApi: # one Lambda handles every route
+          path: /{proxy+}
+          method: ANY
+
+plugins:
+  - serverless-offline
+
+package:
+  patterns:
+    - "!node_modules/.cache/**" #      exclude cache
