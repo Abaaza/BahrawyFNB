@@ -26,6 +26,8 @@ These values are for testing only.
 - `POST /projects` – add a new project (`{ name, description }`)
 
 The existing `/portal` routes for case management continue to work as before.
+Use `POST /portal/signup` and `POST /portal/login` with `username` and `password`
+to access these endpoints.
 
 ## Connecting the Frontend
 

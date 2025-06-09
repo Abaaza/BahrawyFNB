@@ -21,7 +21,7 @@ function LoginForm() {
   const onSubmit = async (data) => {
     setApiError('');
     try {
-      const url = API_BASE ? `${API_BASE}/auth/login` : '/auth/login';
+      const url = API_BASE ? `${API_BASE}/portal/login` : '/portal/login';
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -33,7 +33,7 @@ function LoginForm() {
       }
       const result = await res.json();
       setAuth(result.token, result.role);
-      navigate('/dashboard');
+      navigate('/portal');
     } catch (err) {
       setApiError(err.message);
     }
@@ -42,19 +42,15 @@ function LoginForm() {
   return (
     <Box as="form" onSubmit={handleSubmit(onSubmit)} p={4} bg="white" shadow="md" rounded="md">
       {apiError && <Box color="red.500">{apiError}</Box>}
-      <FormControl isInvalid={errors.email} mb={4}>
-        <FormLabel>Email</FormLabel>
+      <FormControl isInvalid={errors.username} mb={4}>
+        <FormLabel>Username</FormLabel>
         <Input
-          type="email"
-          {...register('email', {
-            required: 'Email is required',
-            pattern: {
-              value: /^[^@\s]+@[^@\s]+\.[^@\s]+$/,
-              message: 'Invalid email',
-            },
+          type="text"
+          {...register('username', {
+            required: 'Username is required',
           })}
         />
-        <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
+        <FormErrorMessage>{errors.username && errors.username.message}</FormErrorMessage>
       </FormControl>
       <FormControl isInvalid={errors.password} mb={4}>
         <FormLabel>Password</FormLabel>
