@@ -14,6 +14,7 @@ const authenticate = require('./authMiddleware');
 const {
   getUsers,
   addUser,
+  getUser,
   getProjects,
   getProject,
   addProject,
@@ -27,6 +28,8 @@ const {
   addReview,
   getReviewsForCase,
 } = require('./db');
+
+const { sendCaseReady, sendNewRequest } = require('./notificationService');
 
 // JWT-based auth middleware
 const requireAuth = authenticate();
@@ -162,7 +165,7 @@ app.post('/portal/cases', auth, async (req, res) => {
     clinCheckId,
     photos: photos || [],
     link: link || '',
-    status: 'open',
+    status: 'new',
     createdAt: Date.now(),
   };
   const created = await addCase(newCase);
@@ -201,7 +204,7 @@ app.post('/portal/cases/:id/assign', auth, async (req, res) => {
   if (c.assignedTo && c.assignedTo !== req.user.id) {
     return res.status(400).json({ error: 'Case already assigned' });
   }
-  await updateCase(id, { assignedTo: req.user.id, status: 'assigned' });
+  await updateCase(id, { assignedTo: req.user.id, status: 'in_progress' });
   res.json({ assignedTo: req.user.id });
 });
 
@@ -230,7 +233,7 @@ app.post('/portal/cases/:id/review', auth, async (req, res) => {
     statements: statements || [],
     createdAt: Date.now(),
   });
-  await updateCase(id, { status: 'reviewed' });
+  await updateCase(id, { status: 'completed' });
   res.status(201).json(review);
 });
 
@@ -308,6 +311,37 @@ app.put('/projects/:id', async (req, res) => {
   const updated = await updateProject(id, req.body);
   if (!updated) {
     return res.status(404).json({ error: 'Project not found' });
+  }
+  res.json(updated);
+});
+
+// --- Case Status Update API ---
+app.put('/api/cases/:id/status', async (req, res) => {
+  const id = req.params.id;
+  const { status } = req.body;
+  if (!['new', 'in_progress', 'completed'].includes(status)) {
+    return res.status(400).json({ error: 'invalid status' });
+  }
+  const existing = await getCase(id);
+  if (!existing) {
+    return res.status(404).json({ error: 'Case not found' });
+  }
+  const updated = await updateCase(id, { status });
+  try {
+    if (status === 'new' && updated.assignedTo) {
+      const spec = await getUser(updated.assignedTo);
+      if (spec && spec.email) {
+        await sendNewRequest(spec.email, updated._id.toString());
+      }
+    }
+    if (status === 'completed') {
+      const dentist = await getUser(updated.userId);
+      if (dentist && dentist.email) {
+        await sendCaseReady(dentist.email, updated._id.toString());
+      }
+    }
+  } catch (err) {
+    console.error('Notification error:', err.message);
   }
   res.json(updated);
 });

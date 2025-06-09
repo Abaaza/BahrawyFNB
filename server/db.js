@@ -12,6 +12,10 @@ async function addUser(user) {
   return doc.toObject();
 }
 
+async function getUser(id) {
+  return User.findById(id).lean();
+}
+
 async function getProjects() {
   return Project.find().lean();
 }
@@ -67,6 +71,7 @@ async function getReviewsForCase(caseId) {
 module.exports = {
   getUsers,
   addUser,
+  getUser,
   getProjects,
   getProject,
   addProject,

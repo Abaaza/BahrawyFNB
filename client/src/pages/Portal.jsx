@@ -8,17 +8,12 @@ import {
   Input,
   Button,
   Select,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
   Link,
   SimpleGrid,
   Image,
   Text,
 } from '@chakra-ui/react';
+import CaseList from '../components/CaseList.jsx';
 import FileUploader from '../components/FileUploader.jsx';
 
 const API_BASE = getApiBase();
@@ -182,9 +177,9 @@ function Portal() {
         onChange={(e) => setStatusFilter(e.target.value)}
       >
         <option value="">All</option>
-        <option value="open">Open</option>
-        <option value="assigned">Assigned</option>
-        <option value="reviewed">Reviewed</option>
+        <option value="new">New</option>
+        <option value="in_progress">In Progress</option>
+        <option value="completed">Completed</option>
       </Select>
 
       {caseDetail && selectedId && (
@@ -218,35 +213,13 @@ function Portal() {
           </Box>
         </Box>
       )}
-      <Table variant="simple" mt={4}>
-        <Thead>
-          <Tr>
-            <Th>ClinCheck ID</Th>
-            <Th>Status</Th>
-            <Th textAlign="center">Actions</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {Array.isArray(cases) &&
-            cases
-              .filter((c) => !statusFilter || c.status === statusFilter)
-              .map((c) => (
-              <Tr key={c.id}>
-                <Td>
-                  <Button variant="link" onClick={() => openCase(c.id)}>
-                    {c.clinCheckId}
-                  </Button>
-                </Td>
-                <Td>{c.status}</Td>
-                <Td textAlign="center">
-                  <Button onClick={() => closeCase(c.id)} bg="red.500" color="white">
-                    Close
-                  </Button>
-                </Td>
-              </Tr>
-              ))}
-        </Tbody>
-      </Table>
+      <CaseList
+        cases={Array.isArray(cases)
+          ? cases.filter((c) => !statusFilter || c.status === statusFilter)
+          : []}
+        onOpen={openCase}
+        onClose={closeCase}
+      />
 
     </Box>
   );
