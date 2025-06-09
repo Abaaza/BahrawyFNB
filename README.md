@@ -34,3 +34,15 @@ Set `VITE_API_BASE_URL` in `client/.env` to your deployed API URL. Example:
 ```
 VITE_API_BASE_URL=https://u9x019avhh.execute-api.me-south-1.amazonaws.com
 ```
+
+## Backend Configuration
+
+Create a `.env` file inside the `server` directory based on `.env.example` and
+provide your MongoDB Atlas password. Example:
+
+```bash
+cp server/.env.example server/.env
+# edit server/.env and replace <db_password>
+```
+
+The Express server will automatically connect to the `MONGO_URI` when it starts.
