@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import {
+  Box,
+  Heading,
+  Text,
+  Input,
+  Button,
+  Image,
+  SimpleGrid,
+} from '@chakra-ui/react';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
@@ -35,30 +44,33 @@ function ProjectDetail() {
       .catch(() => {});
   };
 
-  if (!project) return <div className="p-4">Loading...</div>;
+  if (!project) return <Box p={4}>Loading...</Box>;
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-2">{project.name}</h2>
-      <p className="mb-4">{project.description}</p>
-      <form onSubmit={addPhoto} className="space-y-2 mb-4">
-        <input
+    <Box p={4}>
+      <Heading as="h2" size="lg" mb={2}>
+        {project.name}
+      </Heading>
+      <Text mb={4}>{project.description}</Text>
+      <Box as="form" onSubmit={addPhoto} mb={4}>
+        <Input
           type="text"
           placeholder="Photo URL"
           value={photo}
           onChange={(e) => setPhoto(e.target.value)}
-          className="border p-2 block"
+          mb={2}
         />
-        <button type="submit" className="bg-green-500 text-white px-4 py-1">
+        <Button type="submit" bg="green.500" color="white">
           Add Photo
-        </button>
-      </form>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-        {project.photos && project.photos.map((p) => (
-          <img key={p} src={p} alt="proj" className="w-full h-32 object-cover" />
-        ))}
-      </div>
-    </div>
+        </Button>
+      </Box>
+      <SimpleGrid columns={{ base: 2, md: 4 }} spacing={2}>
+        {project.photos &&
+          project.photos.map((p) => (
+            <Image key={p} src={p} alt="proj" objectFit="cover" h="8rem" w="100%" />
+          ))}
+      </SimpleGrid>
+    </Box>
   );
 }
 

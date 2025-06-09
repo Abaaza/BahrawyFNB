@@ -1,6 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getToken, getRole } from '../utils/auth.js';
+import {
+  Box,
+  Heading,
+  Input,
+  Button,
+  Select,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Link,
+  SimpleGrid,
+} from '@chakra-ui/react';
 
 const API_BASE = 'http://localhost:3000';
 
@@ -90,108 +105,106 @@ function Portal() {
   }, [token, navigate]);
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-2">Case Management</h2>
-      <form onSubmit={createCase} className="space-y-2 mb-4">
-        <input
+    <Box p={4}>
+      <Heading as="h2" size="lg" mb={2}>
+        Case Management
+      </Heading>
+      <Box as="form" onSubmit={createCase} mb={4}>
+        <Input
           type="text"
           placeholder="ClinCheck ID"
           value={form.clinCheckId}
           onChange={(e) => setForm({ ...form, clinCheckId: e.target.value })}
-          className="border p-2 block"
         />
-        <input
+        <Input
           type="text"
           placeholder="ClinCheck Link"
           value={form.link}
           onChange={(e) => setForm({ ...form, link: e.target.value })}
-          className="border p-2 block"
+          mt={2}
         />
-        <input
+        <Input
           type="text"
           placeholder="Photo URL"
           value={form.photo}
           onChange={(e) => setForm({ ...form, photo: e.target.value })}
-          className="border p-2 block"
+          mt={2}
         />
-        <button type="submit" className="bg-green-500 text-white px-4 py-1">
+        <Button type="submit" mt={2} bg="green.500" color="white">
           Submit Case
-        </button>
-      </form>
+        </Button>
+      </Box>
 
-      <select
+      <Select
         value={statusFilter}
         onChange={(e) => setStatusFilter(e.target.value)}
-        className="border p-2 mb-4"
       >
         <option value="">All</option>
         <option value="open">Open</option>
         <option value="assigned">Assigned</option>
         <option value="reviewed">Reviewed</option>
-      </select>
+      </Select>
 
       {caseDetail && selectedId && (
-        <div className="mb-4 border p-2">
-          <h3 className="font-semibold mb-2">Case {caseDetail.clinCheckId}</h3>
+        <Box mb={4} borderWidth="1px" p={2}>
+          <Heading as="h3" size="md" mb={2}>
+            Case {caseDetail.clinCheckId}
+          </Heading>
           {caseDetail.link && (
-            <a href={caseDetail.link} className="text-blue-500 underline">
+            <Link href={caseDetail.link} color="blue.500" textDecor="underline">
               ClinCheck Link
-            </a>
+            </Link>
           )}
-          <div className="flex space-x-2 mt-2">
+          <SimpleGrid columns={4} spacing={2} mt={2}>
             {caseDetail.photos.map((p) => (
-              <img key={p} src={p} alt="photo" className="w-24 h-24 object-cover" />
+              <Image key={p} src={p} alt="photo" objectFit="cover" h="6rem" />
             ))}
-          </div>
+          </SimpleGrid>
           {role === 'specialist' && !caseDetail.assignedTo && (
-            <button
-              onClick={() => assignCase(caseDetail.id)}
-              className="bg-blue-500 text-white px-2 py-1 mt-2"
-            >
+            <Button onClick={() => assignCase(caseDetail.id)} bg="blue.500" color="white" mt={2}>
               Claim Case
-            </button>
+            </Button>
           )}
-          <h4 className="font-medium mt-2">Reviews</h4>
-          <ul className="list-disc ml-5">
+          <Heading as="h4" size="sm" mt={2}>
+            Reviews
+          </Heading>
+          <Box as="ul" pl={5} style={{ listStyleType: 'disc' }}>
             {reviews.map((r) => (
               <li key={r.id}>{r.notes}</li>
             ))}
-          </ul>
-        </div>
+          </Box>
+        </Box>
       )}
-      <table className="min-w-full border">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border px-2 py-1 text-left">ClinCheck ID</th>
-            <th className="border px-2 py-1 text-left">Status</th>
-            <th className="border px-2 py-1">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
+      <Table variant="simple" mt={4}>
+        <Thead>
+          <Tr>
+            <Th>ClinCheck ID</Th>
+            <Th>Status</Th>
+            <Th textAlign="center">Actions</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
           {cases
             .filter((c) => !statusFilter || c.status === statusFilter)
             .map((c) => (
-              <tr key={c.id} className="border-b">
-                <td className="border px-2 py-1">
-                  <button type="button" onClick={() => openCase(c.id)} className="underline">
+              <Tr key={c.id}>
+                <Td>
+                  <Button variant="link" onClick={() => openCase(c.id)}>
                     {c.clinCheckId}
-                  </button>
-                </td>
-                <td className="border px-2 py-1">{c.status}</td>
-                <td className="border px-2 py-1 text-center">
-                  <button
-                    onClick={() => closeCase(c.id)}
-                    className="bg-red-500 text-white px-2 py-1"
-                  >
+                  </Button>
+                </Td>
+                <Td>{c.status}</Td>
+                <Td textAlign="center">
+                  <Button onClick={() => closeCase(c.id)} bg="red.500" color="white">
                     Close
-                  </button>
-                </td>
-              </tr>
+                  </Button>
+                </Td>
+              </Tr>
             ))}
-        </tbody>
-      </table>
- 
-    </div>
+        </Tbody>
+      </Table>
+
+    </Box>
   );
 }
 
