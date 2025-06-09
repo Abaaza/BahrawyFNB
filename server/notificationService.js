@@ -1,17 +1,37 @@
 const sgMail = require('@sendgrid/mail');
+const nodemailer = require('nodemailer');
 
 const API_KEY = process.env.SENDGRID_API_KEY;
-const FROM_EMAIL = process.env.NOTIFY_FROM_EMAIL || 'noreply@example.com';
+const FROM_EMAIL =
+  process.env.NOTIFY_FROM_EMAIL || process.env.EMAIL_FROM || 'noreply@example.com';
+
+let transporter;
+if (process.env.SMTP_HOST) {
+  transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT || '587', 10),
+    secure: process.env.SMTP_PORT === '465',
+    auth: process.env.SMTP_USER
+      ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
+      : undefined,
+  });
+}
 
 if (API_KEY) {
   sgMail.setApiKey(API_KEY);
-} else {
-  console.warn('SENDGRID_API_KEY not set; emails will not be sent');
+} else if (!transporter) {
+  console.warn('No email service configured; emails will not be sent');
 }
 
 async function sendWithRetry(msg, attempt = 0) {
   try {
-    await sgMail.send(msg);
+    if (API_KEY) {
+      await sgMail.send(msg);
+    } else if (transporter) {
+      await transporter.sendMail(msg);
+    } else {
+      return;
+    }
     console.log(`Email sent to ${msg.to}`);
   } catch (err) {
     console.error(`Failed to send email to ${msg.to}:`, err.message);
