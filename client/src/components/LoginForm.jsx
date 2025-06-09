@@ -3,8 +3,6 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { setAuth } from '../utils/auth.js';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
-
 function LoginForm() {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [apiError, setApiError] = useState('');
@@ -13,7 +11,7 @@ function LoginForm() {
   const onSubmit = async (data) => {
     setApiError('');
     try {
-      const res = await fetch(`${API_BASE}/auth/login`, {
+      const res = await fetch('/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),

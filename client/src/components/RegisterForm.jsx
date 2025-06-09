@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
-
 function RegisterForm() {
   const { register, handleSubmit, formState: { errors } } = useForm({
     defaultValues: { role: 'dentist' },
@@ -14,7 +12,7 @@ function RegisterForm() {
   const onSubmit = async (data) => {
     setApiError('');
     try {
-      const res = await fetch(`${API_BASE}/auth/register`, {
+      const res = await fetch('/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
