@@ -16,6 +16,7 @@ import {
 import CaseList from '../components/CaseList.jsx';
 import FileUploader from '../components/FileUploader.jsx';
 import ReviewForm from '../components/ReviewForm.jsx';
+import CaseCard from '../components/CaseCard.jsx';
 
 const API_BASE = getApiBase();
 
@@ -184,26 +185,12 @@ function Portal() {
       </Select>
 
       {caseDetail && selectedId && (
-        <Box mb={4} borderWidth="1px" p={2}>
-          <Heading as="h3" size="md" mb={2}>
-            Case {caseDetail.clinCheckId}
-          </Heading>
-          {caseDetail.link && (
-            <Link href={caseDetail.link} color="blue.500" textDecor="underline">
-              ClinCheck Link
-            </Link>
-          )}
-          <SimpleGrid columns={4} spacing={2} mt={2}>
-            {Array.isArray(caseDetail.photos) &&
-              caseDetail.photos.map((p) => (
-                <Image key={p} src={p} alt="photo" objectFit="cover" h="6rem" />
-              ))}
-          </SimpleGrid>
-          {role === 'specialist' && !caseDetail.assignedTo && (
-            <Button onClick={() => assignCase(caseDetail.id)} bg="blue.500" color="white" mt={2}>
-              Claim Case
-            </Button>
-          )}
+        <CaseCard
+          detail={caseDetail}
+          role={role}
+          onClose={closeCase}
+          onAssign={assignCase}
+        >
           <Heading as="h4" size="sm" mt={2}>
             Reviews
           </Heading>
@@ -215,7 +202,7 @@ function Portal() {
           {role === 'specialist' && caseDetail.status !== 'completed' && (
             <ReviewForm />
           )}
-        </Box>
+        </CaseCard>
       )}
       <CaseList
         cases={Array.isArray(cases)
