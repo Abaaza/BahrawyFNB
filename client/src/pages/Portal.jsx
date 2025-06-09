@@ -19,6 +19,7 @@ import {
   Image,
   Text,
 } from '@chakra-ui/react';
+import FileUploader from '../components/FileUploader.jsx';
 
 const API_BASE = getApiBase();
 
@@ -31,7 +32,7 @@ function Portal() {
   const [selectedId, setSelectedId] = useState(null);
   const [caseDetail, setCaseDetail] = useState(null);
   const [reviews, setReviews] = useState([]);
-  const [form, setForm] = useState({ clinCheckId: '', link: '', photo: '' });
+  const [form, setForm] = useState({ clinCheckId: '', link: '', photos: [] });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -81,13 +82,13 @@ function Portal() {
       body: JSON.stringify({
         clinCheckId: form.clinCheckId,
         link: form.link,
-        photos: form.photo ? [form.photo] : [],
+        photos: form.photos,
       }),
     })
       .then((r) => r.json())
       .then((newCase) => {
         setCases([...cases, newCase]);
-        setForm({ clinCheckId: '', link: '', photo: '' });
+        setForm({ clinCheckId: '', link: '', photos: [] });
       });
   };
 
@@ -168,13 +169,9 @@ function Portal() {
           onChange={(e) => setForm({ ...form, link: e.target.value })}
           mt={2}
         />
-        <Input
-          type="text"
-          placeholder="Photo URL"
-          value={form.photo}
-          onChange={(e) => setForm({ ...form, photo: e.target.value })}
-          mt={2}
-        />
+        <Box mt={2}>
+          <FileUploader onChange={(urls) => setForm({ ...form, photos: urls })} />
+        </Box>
         <Button type="submit" mt={2} bg="green.500" color="white">
           Submit Case
         </Button>
