@@ -49,3 +49,21 @@ cp server/.env.example server/.env
 ```
 
 The Express server will automatically connect to the `MONGO_URI` when it starts.
+
+### Email Configuration
+
+Emails are sent using SendGrid if `SENDGRID_API_KEY` is provided. If not, the
+server falls back to SMTP settings with Nodemailer. Set the following variables
+in `server/.env`:
+
+```bash
+# SendGrid
+SENDGRID_API_KEY=<your-key>
+NOTIFY_FROM_EMAIL=noreply@example.com
+
+# SMTP fallback
+SMTP_HOST=<smtp-host>
+SMTP_PORT=587
+SMTP_USER=<smtp-user>
+SMTP_PASS=<smtp-pass>
+```
