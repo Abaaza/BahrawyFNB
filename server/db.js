@@ -69,6 +69,14 @@ async function getReviewsForCase(caseId) {
   return Review.find({ caseId }).lean();
 }
 
+async function getReview(id) {
+  return Review.findById(id).lean();
+}
+
+async function updateReview(id, updates) {
+  return Review.findByIdAndUpdate(id, updates, { new: true }).lean();
+}
+
 async function getClinicalStatements() {
   return ClinicalStatement.find().lean();
 }
@@ -94,6 +102,8 @@ module.exports = {
   getReviews,
   addReview,
   getReviewsForCase,
+  getReview,
+  updateReview,
   getClinicalStatements,
   addClinicalStatement,
 };
