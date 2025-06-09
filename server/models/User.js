@@ -1,11 +1,12 @@
-class User {
-  constructor({ name, email, passwordHash, role }) {
-    this.id = null; // assigned when stored
-    this.name = name;
-    this.email = email;
-    this.passwordHash = passwordHash;
-    this.role = role; // 'dentist' or 'specialist'
-  }
-}
+const mongoose = require('mongoose');
 
-module.exports = User;
+const userSchema = new mongoose.Schema({
+  name: String,
+  username: String,
+  email: { type: String, unique: true, sparse: true },
+  password: String,
+  passwordHash: String,
+  role: { type: String, enum: ['dentist', 'specialist', 'admin'], required: true }
+});
+
+module.exports = mongoose.model('User', userSchema);
