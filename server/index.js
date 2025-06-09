@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const serverless = require('serverless-http');
 const crypto = require('crypto');
+const connectMongo = require('./mongoConnect');
 
 const { router: authRouter } = require('./auth');
 const authenticate = require('./authMiddleware');
@@ -24,6 +25,7 @@ const requireAuth = authenticate();
 
 const app = express();
 const tokens = new Map();
+connectMongo();
 app.use(cors());
 app.use(express.json());
 
