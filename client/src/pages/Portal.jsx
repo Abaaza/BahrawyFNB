@@ -15,6 +15,8 @@ import {
   Td,
   Link,
   SimpleGrid,
+  Image,
+  Text,
 } from '@chakra-ui/react';
 
 const API_BASE = 'http://localhost:3000';
@@ -29,15 +31,35 @@ function Portal() {
   const [caseDetail, setCaseDetail] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [form, setForm] = useState({ clinCheckId: '', link: '', photo: '' });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
 
-  const loadCases = () => {
-    fetch(`${API_BASE}/portal/cases`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => r.json())
-      .then(setCases)
-      .catch(() => {});
+  const loadCases = async () => {
+    const authToken = localStorage.getItem('token');
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await fetch(`${API_BASE}/portal/cases`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      if (!res.ok) {
+        throw new Error('Failed to load cases');
+      }
+      const data = await res.json();
+      const list = Array.isArray(data)
+        ? data
+        : Array.isArray(data.cases)
+        ? data.cases
+        : [];
+      setCases(list);
+    } catch (err) {
+      console.error(err);
+      setCases([]);
+      setError('Unable to load cases');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -77,18 +99,34 @@ function Portal() {
     });
   };
 
-  const openCase = (id) => {
+  const openCase = async (id) => {
     setSelectedId(id);
-    fetch(`${API_BASE}/portal/cases/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => r.json())
-      .then(setCaseDetail);
-    fetch(`${API_BASE}/portal/reviews/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => r.json())
-      .then(setReviews);
+    const authToken = localStorage.getItem('token');
+    try {
+      const res = await fetch(`${API_BASE}/portal/cases/${id}`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      if (!res.ok) {
+        throw new Error('Failed to fetch case');
+      }
+      const detail = await res.json();
+      detail.photos = Array.isArray(detail.photos)
+        ? detail.photos.filter((p) => /^https?:\/\//.test(p))
+        : [];
+      setCaseDetail(detail);
+      const revRes = await fetch(`${API_BASE}/portal/reviews/${id}`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      if (!revRes.ok) {
+        throw new Error('Failed to fetch reviews');
+      }
+      const revData = await revRes.json();
+      setReviews(Array.isArray(revData) ? revData : []);
+    } catch (err) {
+      console.error(err);
+      setCaseDetail(null);
+      setReviews([]);
+    }
   };
 
   const assignCase = (id) => {
@@ -109,6 +147,12 @@ function Portal() {
       <Heading as="h2" size="lg" mb={2}>
         Case Management
       </Heading>
+      {loading && <Text>Loading cases...</Text>}
+      {error && (
+        <Text color="red.500" mb={2}>
+          {error}
+        </Text>
+      )}
       <Box as="form" onSubmit={createCase} mb={4}>
         <Input
           type="text"
@@ -156,9 +200,10 @@ function Portal() {
             </Link>
           )}
           <SimpleGrid columns={4} spacing={2} mt={2}>
-            {caseDetail.photos.map((p) => (
-              <Image key={p} src={p} alt="photo" objectFit="cover" h="6rem" />
-            ))}
+            {Array.isArray(caseDetail.photos) &&
+              caseDetail.photos.map((p) => (
+                <Image key={p} src={p} alt="photo" objectFit="cover" h="6rem" />
+              ))}
           </SimpleGrid>
           {role === 'specialist' && !caseDetail.assignedTo && (
             <Button onClick={() => assignCase(caseDetail.id)} bg="blue.500" color="white" mt={2}>
@@ -184,9 +229,10 @@ function Portal() {
           </Tr>
         </Thead>
         <Tbody>
-          {cases
-            .filter((c) => !statusFilter || c.status === statusFilter)
-            .map((c) => (
+          {Array.isArray(cases) &&
+            cases
+              .filter((c) => !statusFilter || c.status === statusFilter)
+              .map((c) => (
               <Tr key={c.id}>
                 <Td>
                   <Button variant="link" onClick={() => openCase(c.id)}>
@@ -200,7 +246,7 @@ function Portal() {
                   </Button>
                 </Td>
               </Tr>
-            ))}
+              ))}
         </Tbody>
       </Table>
 
