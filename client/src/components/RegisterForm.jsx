@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 function RegisterForm() {
   const { register, handleSubmit, formState: { errors } } = useForm({
@@ -14,7 +14,8 @@ function RegisterForm() {
   const onSubmit = async (data) => {
     setApiError('');
     try {
-      const res = await fetch(`${API_BASE}/auth/register`, {
+      const url = API_BASE ? `${API_BASE}/auth/register` : '/auth/register';
+      const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
