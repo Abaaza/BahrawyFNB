@@ -30,10 +30,16 @@ const {
   getReviewsForCase,
   getReview,
   updateReview,
+  addBooking,
+  getBookingsForSpecialist,
 } = require('./db');
 const { generateDraftReport } = require('./draftReportService');
 
-const { sendCaseReady, sendNewRequest } = require('./notificationService');
+const {
+  sendCaseReady,
+  sendNewRequest,
+  sendBookingConfirmation,
+} = require('./notificationService');
 
 // JWT-based auth middleware
 const requireAuth = authenticate();
@@ -402,6 +408,46 @@ app.post('/api/reviews/:id/export', async (req, res) => {
     console.error('Export error', err);
     res.status(500).json({ error: 'Failed to export PDF' });
   }
+});
+
+// --- Booking APIs ---
+app.get('/api/bookings/availability', async (req, res) => {
+  const { specialistId, start, end } = req.query;
+  if (!specialistId || !start || !end) {
+    return res.status(400).json({ error: 'specialistId, start and end required' });
+  }
+  const bookings = await getBookingsForSpecialist(specialistId, start, end);
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  const slots = [];
+  for (let d = new Date(startDate); d < endDate; d.setHours(d.getHours() + 1)) {
+    if (d.getHours() < 9 || d.getHours() >= 17) continue;
+    const conflict = bookings.some((b) => new Date(b.datetime).getTime() === d.getTime());
+    if (!conflict) {
+      slots.push(new Date(d).toISOString());
+    }
+  }
+  res.json({ slots });
+});
+
+app.post('/api/bookings', async (req, res) => {
+  const { dentistId, specialistId, datetime } = req.body;
+  if (!dentistId || !specialistId || !datetime) {
+    return res.status(400).json({ error: 'dentistId, specialistId and datetime required' });
+  }
+  const existing = await getBookingsForSpecialist(specialistId, datetime, new Date(new Date(datetime).getTime() + 1));
+  if (existing.length) {
+    return res.status(400).json({ error: 'Slot already booked' });
+  }
+  const booking = await addBooking({ dentistId, specialistId, datetime });
+  try {
+    const dentist = await getUser(dentistId);
+    const specialist = await getUser(specialistId);
+    await sendBookingConfirmation(dentist?.email, specialist?.email, datetime);
+  } catch (err) {
+    console.error('Booking email error:', err.message);
+  }
+  res.status(201).json(booking);
 });
 
 

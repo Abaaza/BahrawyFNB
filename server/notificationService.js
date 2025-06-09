@@ -44,7 +44,32 @@ async function sendNewRequest(toEmail, caseId) {
   await sendWithRetry(msg);
 }
 
+async function sendBookingConfirmation(dentistEmail, specialistEmail, datetime) {
+  const timeString = new Date(datetime).toLocaleString();
+  if (dentistEmail) {
+    const msg = {
+      to: dentistEmail,
+      from: FROM_EMAIL,
+      subject: 'Booking Confirmed',
+      text: `Your call is booked for ${timeString}.`,
+      html: `<p>Your call is booked for <strong>${timeString}</strong>.</p>`,
+    };
+    await sendWithRetry(msg);
+  }
+  if (specialistEmail) {
+    const msg = {
+      to: specialistEmail,
+      from: FROM_EMAIL,
+      subject: 'New Booking Scheduled',
+      text: `A call was booked for ${timeString}.`,
+      html: `<p>A call was booked for <strong>${timeString}</strong>.</p>`,
+    };
+    await sendWithRetry(msg);
+  }
+}
+
 module.exports = {
   sendCaseReady,
   sendNewRequest,
+  sendBookingConfirmation,
 };

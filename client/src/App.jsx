@@ -14,6 +14,7 @@ const Register = lazy(() => import('./pages/Register.jsx'));
 const Dashboard = lazy(() => import('./pages/Dashboard.jsx'));
 const Projects = lazy(() => import('./pages/Projects.jsx'));
 const ProjectDetail = lazy(() => import('./pages/ProjectDetail.jsx'));
+const Booking = lazy(() => import('./pages/Booking.jsx'));
 
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="projects" element={<Projects />} />
           <Route path="projects/:id" element={<ProjectDetail />} />
+          <Route path="booking" element={<Booking />} />
          </Route>
       </Routes>
     </Suspense>
