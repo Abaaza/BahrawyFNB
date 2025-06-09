@@ -1,6 +1,6 @@
 # Portal Example
 
-This project includes a small Express API and a React client. It now ships with a sample database stored in `server/database.json` which holds example users and projects.
+This project includes a small Express API and a React client. Data is persisted in MongoDB instead of the previous `server/database.json` file.
 
 ## Example Credentials
 

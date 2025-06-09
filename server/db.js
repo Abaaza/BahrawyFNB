@@ -1,121 +1,70 @@
-const fs = require('fs');
-const path = require('path');
+const User = require('./models/User');
+const Project = require('./models/Project');
+const Case = require('./models/Case');
+const Review = require('./models/Review');
 
-const DB_PATH = path.join(__dirname, 'database.json');
-
-function loadDB() {
-  if (!fs.existsSync(DB_PATH)) {
-    const initial = { users: [], projects: [], cases: [], reviews: [] };
-    fs.writeFileSync(DB_PATH, JSON.stringify(initial, null, 2));
-    return initial;
-  }
-  const data = JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
-  if (!('reviews' in data)) data.reviews = [];
-  return data;}
-
-function saveDB(db) {
-  fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
+async function getUsers() {
+  return User.find().lean();
 }
 
-function getUsers() {
-  const db = loadDB();
-  return db.users;
+async function addUser(user) {
+  const doc = await User.create(user);
+  return doc.toObject();
 }
 
-function addUser(user) {
-  const db = loadDB();
-  user.id = db.users.length ? db.users[db.users.length - 1].id + 1 : 1;
-  db.users.push(user);
-  saveDB(db);
-  return user;
+async function getProjects() {
+  return Project.find().lean();
 }
 
-function getProjects() {
-  const db = loadDB();
-  return db.projects;
+async function addProject(project) {
+  const doc = await Project.create(project);
+  return doc.toObject();
 }
 
-function addProject(project) {
-  const db = loadDB();
-  if (!('photos' in project)) project.photos = [];
-  project.id = db.projects.length ? db.projects[db.projects.length - 1].id + 1 : 1;
-  db.projects.push(project);
-  saveDB(db);
-  return project;
+async function getProject(id) {
+  return Project.findById(id).lean();
 }
 
-function getProject(id) {
-  const db = loadDB();
-  return db.projects.find((p) => p.id === id) || null;
+async function updateProject(id, updates) {
+  return Project.findByIdAndUpdate(id, updates, { new: true }).lean();
 }
 
-function updateProject(id, updates) {
-  const db = loadDB();
-  const proj = db.projects.find((p) => p.id === id);
-  if (!proj) return null;
-  Object.assign(proj, updates);
-  saveDB(db);
-  return proj;
+async function getCases() {
+  return Case.find().lean();
 }
 
-
-function getCases() {
-  const db = loadDB();
-  return db.cases;
+async function addCase(caseItem) {
+  const doc = await Case.create(caseItem);
+  return doc.toObject();
 }
 
-function addCase(caseItem) {
-  const db = loadDB();
-  caseItem.id = db.cases.length ? db.cases[db.cases.length - 1].id + 1 : 1;
-  db.cases.push(caseItem);
-  saveDB(db);
-  return caseItem;
+async function updateCase(id, updates) {
+  return Case.findByIdAndUpdate(id, updates, { new: true }).lean();
 }
 
-function updateCase(id, updates) {
-  const db = loadDB();
-  const c = db.cases.find((k) => k.id === id);
-  if (!c) return null;
-  Object.assign(c, updates);
-  saveDB(db);
-  return c;
+async function deleteCase(id) {
+  const res = await Case.findByIdAndDelete(id);
+  return !!res;
 }
 
-function deleteCase(id) {
-  const db = loadDB();
-  const idx = db.cases.findIndex((c) => c.id === id);
-  if (idx === -1) return false;
-  db.cases.splice(idx, 1);
-  saveDB(db);
-  return true;
-}
-function getCase(id) {
-  const db = loadDB();
-  return db.cases.find((c) => c.id === id) || null;
+async function getCase(id) {
+  return Case.findById(id).lean();
 }
 
-function getReviews() {
-  const db = loadDB();
-  return db.reviews;
+async function getReviews() {
+  return Review.find().lean();
 }
 
-function addReview(review) {
-  const db = loadDB();
-  review.id = db.reviews.length ? db.reviews[db.reviews.length - 1].id + 1 : 1;
-  db.reviews.push(review);
-  saveDB(db);
-  return review;
+async function addReview(review) {
+  const doc = await Review.create(review);
+  return doc.toObject();
 }
 
-function getReviewsForCase(caseId) {
-  const db = loadDB();
-  return db.reviews.filter((r) => r.caseId === caseId);
+async function getReviewsForCase(caseId) {
+  return Review.find({ caseId }).lean();
 }
-
 
 module.exports = {
-  loadDB,
-  saveDB,
   getUsers,
   addUser,
   getProjects,
