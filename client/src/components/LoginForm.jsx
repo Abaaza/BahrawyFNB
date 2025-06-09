@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { setAuth } from '../utils/auth.js';
+import { getApiBase } from '../utils/api.js';
 import {
   Box,
   Input,
@@ -11,7 +12,7 @@ import {
   FormErrorMessage,
 } from '@chakra-ui/react';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
+const API_BASE = getApiBase();
 
 function LoginForm() {
   const { register, handleSubmit, formState: { errors } } = useForm();

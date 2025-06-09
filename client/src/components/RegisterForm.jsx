@@ -11,7 +11,9 @@ import {
   FormErrorMessage,
 } from '@chakra-ui/react';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
+import { getApiBase } from '../utils/api.js';
+
+const API_BASE = getApiBase();
 
 function RegisterForm() {
   const { register, handleSubmit, formState: { errors } } = useForm({

@@ -12,7 +12,9 @@ import {
   Link,
 } from '@chakra-ui/react';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+import { getApiBase } from '../utils/api.js';
+
+const API_BASE = getApiBase();
 
 function Projects() {
   const [projects, setProjects] = useState([]);
