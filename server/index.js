@@ -6,6 +6,7 @@ const crypto = require('crypto');
 const path = require('path');
 const multer = require('multer');
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const puppeteer = require('puppeteer');
 const connectMongo = require('./mongoConnect');
 
 const { router: authRouter } = require('./auth');
@@ -27,6 +28,8 @@ const {
   getReviews,
   addReview,
   getReviewsForCase,
+  getReview,
+  updateReview,
 } = require('./db');
 const { generateDraftReport } = require('./draftReportService');
 
@@ -354,6 +357,50 @@ app.post('/api/generate-draft-report', async (req, res) => {
   } catch (err) {
     console.error('Draft report error:', err.message);
     res.status(500).json({ error: 'Failed to generate draft report' });
+  }
+});
+
+app.post('/api/reviews/:id/export', async (req, res) => {
+  const id = req.params.id;
+  try {
+    const review = await getReview(id);
+    if (!review) {
+      return res.status(404).json({ error: 'Review not found' });
+    }
+
+    const html = `<!DOCTYPE html>
+      <html>
+        <head><meta charset="utf-8"><title>Review ${id}</title></head>
+        <body>
+          <h1>Review ${id}</h1>
+          <p>${review.notes || ''}</p>
+          <ul>${(review.statements || []).map((s) => `<li>${s}</li>`).join('')}</ul>
+        </body>
+      </html>`;
+
+    const browser = await puppeteer.launch({ headless: 'new' });
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: 'load' });
+    const pdfBuffer = await page.pdf({ format: 'A4' });
+    await browser.close();
+
+    const key = `pdfs/${id}-${Date.now()}.pdf`;
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: BUCKET,
+        Key: key,
+        Body: pdfBuffer,
+        ContentType: 'application/pdf',
+      })
+    );
+    const base =
+      PUBLIC_URL || `https://${BUCKET}.s3.${process.env.S3_REGION}.amazonaws.com`;
+    const pdfUrl = `${base}/${key}`;
+    const updated = await updateReview(id, { pdfUrl });
+    res.json({ pdfUrl, review: updated });
+  } catch (err) {
+    console.error('Export error', err);
+    res.status(500).json({ error: 'Failed to export PDF' });
   }
 });
 

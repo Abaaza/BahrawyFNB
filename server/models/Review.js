@@ -5,6 +5,7 @@ const reviewSchema = new mongoose.Schema({
   specialistId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   notes: String,
   statements: [String],
+  pdfUrl: String,
   createdAt: { type: Date, default: Date.now }
 });
 
