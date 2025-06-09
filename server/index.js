@@ -28,6 +28,7 @@ const {
   addReview,
   getReviewsForCase,
 } = require('./db');
+const { generateDraftReport } = require('./draftReportService');
 
 const { sendCaseReady, sendNewRequest } = require('./notificationService');
 
@@ -344,6 +345,16 @@ app.put('/api/cases/:id/status', async (req, res) => {
     console.error('Notification error:', err.message);
   }
   res.json(updated);
+});
+
+app.post('/api/generate-draft-report', async (req, res) => {
+  try {
+    const report = await generateDraftReport(req.body);
+    res.json(report);
+  } catch (err) {
+    console.error('Draft report error:', err.message);
+    res.status(500).json({ error: 'Failed to generate draft report' });
+  }
 });
 
 

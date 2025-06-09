@@ -78,3 +78,4 @@ This document outlines the planned functionality for the portal.
 
 - Schemas for `User`, `Case`, `Review`, `Booking` and `ClinicalStatement`
 - RESTful endpoints for the frontend to perform CRUD operations
+- Automated draft report generation using clinical statements

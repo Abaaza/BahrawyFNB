@@ -24,6 +24,7 @@ These values are for testing only.
 ### Projects
 - `GET /projects` – list all projects
 - `POST /projects` – add a new project (`{ name, description }`)
+- `POST /api/generate-draft-report` – create a draft report from case data
 
 The existing `/portal` routes for case management continue to work as before.
 Use `POST /portal/signup` and `POST /portal/login` with `username` and `password`
