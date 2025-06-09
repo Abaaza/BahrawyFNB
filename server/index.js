@@ -19,6 +19,9 @@ const {
   deleteCase,
 } = require('./db');
 
+// JWT-based auth middleware
+const requireAuth = authenticate();
+
 const app = express();
 const tokens = new Map();
 app.use(cors());
@@ -44,8 +47,7 @@ function auth(req, res, next) {
   return next();
 }
 
-// JWT-based auth middleware
-const requireAuth = authenticate();
+
 
 // --- Signup Route ---
 app.post('/portal/signup', (req, res) => {
