@@ -169,13 +169,14 @@ app.post('/portal/login', async (req, res) => {
 
 // --- Case Management ---
 app.post('/portal/cases', auth, async (req, res) => {
-  const { clinCheckId, photos, link } = req.body;
+  const { clinCheckId, photos, files, link } = req.body;
   const newCase = {
     userId: req.user.id,
     clinCheckId,
     photos: photos || [],
+    files: files || [],
     link: link || '',
-    status: 'new',
+    status: 'received',
     createdAt: Date.now(),
   };
   const created = await addCase(newCase);
@@ -243,7 +244,7 @@ app.post('/portal/cases/:id/review', auth, async (req, res) => {
     statements: statements || [],
     createdAt: Date.now(),
   });
-  await updateCase(id, { status: 'completed' });
+  await updateCase(id, { status: 'report_ready' });
   res.status(201).json(review);
 });
 
@@ -329,7 +330,7 @@ app.put('/projects/:id', async (req, res) => {
 app.put('/api/cases/:id/status', async (req, res) => {
   const id = req.params.id;
   const { status } = req.body;
-  if (!['new', 'in_progress', 'completed'].includes(status)) {
+  if (!['received', 'in_progress', 'report_ready'].includes(status)) {
     return res.status(400).json({ error: 'invalid status' });
   }
   const existing = await getCase(id);
@@ -338,13 +339,13 @@ app.put('/api/cases/:id/status', async (req, res) => {
   }
   const updated = await updateCase(id, { status });
   try {
-    if (status === 'new' && updated.assignedTo) {
+    if (status === 'received' && updated.assignedTo) {
       const spec = await getUser(updated.assignedTo);
       if (spec && spec.email) {
         await sendNewRequest(spec.email, updated._id.toString());
       }
     }
-    if (status === 'completed') {
+    if (status === 'report_ready') {
       const dentist = await getUser(updated.userId);
       if (dentist && dentist.email) {
         await sendCaseReady(dentist.email, updated._id.toString());

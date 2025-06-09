@@ -19,7 +19,7 @@ This document outlines the planned functionality for the portal.
 
 ## Case List & Filtering
 
-- Sort or filter by status (e.g. _Pending Review_, _Reviewed_)
+- Sort or filter by status (e.g. _Received_, _In Progress_, _Report Ready_)
 - Search by ID or date
 
 ## Case Detail & PDF Access
@@ -31,6 +31,7 @@ This document outlines the planned functionality for the portal.
 
 - Backend logic to assign new cases to specialists
 - Simple UI for specialists to pull from the queue of unassigned cases
+- Specialists update case status from _Received_ to _In Progress_ and finally _Report Ready_
 
 ## Review Interface with Dropdown Libraries
 
