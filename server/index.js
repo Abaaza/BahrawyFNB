@@ -3,6 +3,9 @@ const express = require('express');
 const cors = require('cors');
 const serverless = require('serverless-http');
 const crypto = require('crypto');
+const path = require('path');
+const multer = require('multer');
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const connectMongo = require('./mongoConnect');
 
 const { router: authRouter } = require('./auth');
@@ -33,6 +36,60 @@ const tokens = new Map();
 connectMongo();
 app.use(cors());
 app.use(express.json());
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  fileFilter(req, file, cb) {
+    const allowed = [
+      'image/jpeg',
+      'image/png',
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ];
+    if (!allowed.includes(file.mimetype)) {
+      return cb(new Error('Invalid file type'));
+    }
+    cb(null, true);
+  },
+});
+
+const s3 = new S3Client({
+  region: process.env.S3_REGION,
+  endpoint: process.env.S3_ENDPOINT || undefined,
+  credentials: process.env.S3_ACCESS_KEY_ID
+    ? {
+        accessKeyId: process.env.S3_ACCESS_KEY_ID,
+        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+      }
+    : undefined,
+});
+const BUCKET = process.env.S3_BUCKET;
+const PUBLIC_URL = process.env.S3_PUBLIC_URL;
+
+app.post('/api/uploads/photos', upload.single('file'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+  const ext = path.extname(req.file.originalname);
+  const key = `uploads/${crypto.randomUUID()}${ext}`;
+  try {
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: BUCKET,
+        Key: key,
+        Body: req.file.buffer,
+        ContentType: req.file.mimetype,
+      })
+    );
+    const base =
+      PUBLIC_URL || `https://${BUCKET}.s3.${process.env.S3_REGION}.amazonaws.com`;
+    res.json({ photoUrl: `${base}/${key}` });
+  } catch (err) {
+    console.error('Upload error', err);
+    res.status(500).json({ error: 'Upload failed' });
+  }
+});
 
 // --- Auth Routes (JWT based) ---
 app.use('/auth', authRouter);
