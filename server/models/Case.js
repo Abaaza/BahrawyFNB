@@ -5,7 +5,11 @@ const caseSchema = new mongoose.Schema({
   clinCheckId: String,
   photos: [String],
   link: String,
-  status: String,
+  status: {
+    type: String,
+    enum: ['new', 'in_progress', 'completed'],
+    default: 'new',
+  },
   assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   createdAt: { type: Date, default: Date.now }
 });
