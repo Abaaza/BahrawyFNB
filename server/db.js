@@ -2,6 +2,7 @@ const User = require('./models/User');
 const Project = require('./models/Project');
 const Case = require('./models/Case');
 const Review = require('./models/Review');
+const ClinicalStatement = require('./models/ClinicalStatement');
 
 async function getUsers() {
   return User.find().lean();
@@ -68,6 +69,15 @@ async function getReviewsForCase(caseId) {
   return Review.find({ caseId }).lean();
 }
 
+async function getClinicalStatements() {
+  return ClinicalStatement.find().lean();
+}
+
+async function addClinicalStatement(statement) {
+  const doc = await ClinicalStatement.create(statement);
+  return doc.toObject();
+}
+
 module.exports = {
   getUsers,
   addUser,
@@ -84,4 +94,6 @@ module.exports = {
   getReviews,
   addReview,
   getReviewsForCase,
+  getClinicalStatements,
+  addClinicalStatement,
 };
