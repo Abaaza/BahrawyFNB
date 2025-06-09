@@ -1,110 +1,95 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { Flex, Box, Image, Link } from '@chakra-ui/react';
 
 function Header({ onNavigate }) {
   return (
-    <header className="bg-teal-500 text-white p-4 flex items-center justify-between">
-      <a href="#main" className="skip-link sr-only focus:not-sr-only">Skip to Main Content</a>
-      <img
+    <Flex as="header" bg="teal.500" color="white" p={4} align="center" justify="space-between">
+      <Link href="#main" className="skip-link sr-only focus:not-sr-only">
+        Skip to Main Content
+      </Link>
+      <Image
         src="https://via.placeholder.com/120x40?text=Treated+Web"
         alt="Treated Web"
-        className="h-10"
+        h={10}
       />
       <nav>
-        <ul className="flex gap-4">
-          <li>
+        <Flex as="ul" gap={4} listStyleType="none">
+          <Box as="li">
             <NavLink
               to="/"
-              className={({ isActive }) =>
-                `${isActive ? 'border-b-2 font-semibold' : ''} hover:text-gray-200`
-              }
+              className={({ isActive }) => (isActive ? 'border-b-2 font-semibold' : '')}
             >
               Home
             </NavLink>
-          </li>
-          <li>
+          </Box>
+          <Box as="li">
             <NavLink
               to="/about"
-              className={({ isActive }) =>
-                `${isActive ? 'border-b-2 font-semibold' : ''} hover:text-gray-200`
-              }
+              className={({ isActive }) => (isActive ? 'border-b-2 font-semibold' : '')}
             >
               About Us
             </NavLink>
-          </li>
-          <li>
+          </Box>
+          <Box as="li">
             <NavLink
               to="/services"
-              className={({ isActive }) =>
-                `${isActive ? 'border-b-2 font-semibold' : ''} hover:text-gray-200`
-              }
+              className={({ isActive }) => (isActive ? 'border-b-2 font-semibold' : '')}
             >
               Services
             </NavLink>
-          </li>
-          <li>
+          </Box>
+          <Box as="li">
             <NavLink
               to="/contact"
-              className={({ isActive }) =>
-                `${isActive ? 'border-b-2 font-semibold' : ''} hover:text-gray-200`
-              }
+              className={({ isActive }) => (isActive ? 'border-b-2 font-semibold' : '')}
             >
               Contact
             </NavLink>
-          </li>
-                    <li>
+          </Box>
+          <Box as="li">
             <NavLink
               to="/projects"
-              className={({ isActive }) =>
-                `${isActive ? 'border-b-2 font-semibold' : ''} hover:text-gray-200`
-              }
+              className={({ isActive }) => (isActive ? 'border-b-2 font-semibold' : '')}
             >
               Projects
             </NavLink>
-          </li>
-          <li>
-          <NavLink
-            to="/portal"
-            className={({ isActive }) =>
-              `${isActive ? 'border-b-2 font-semibold' : ''} hover:text-gray-200`
-            }
-          >
-            Portal
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/dashboard"
-            className={({ isActive }) =>
-              `${isActive ? 'border-b-2 font-semibold' : ''} hover:text-gray-200`
-            }
-          >
-            Dashboard
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/login"
-            className={({ isActive }) =>
-              `${isActive ? 'border-b-2 font-semibold' : ''} hover:text-gray-200`
-              }
+          </Box>
+          <Box as="li">
+            <NavLink
+              to="/portal"
+              className={({ isActive }) => (isActive ? 'border-b-2 font-semibold' : '')}
+            >
+              Portal
+            </NavLink>
+          </Box>
+          <Box as="li">
+            <NavLink
+              to="/dashboard"
+              className={({ isActive }) => (isActive ? 'border-b-2 font-semibold' : '')}
+            >
+              Dashboard
+            </NavLink>
+          </Box>
+          <Box as="li">
+            <NavLink
+              to="/login"
+              className={({ isActive }) => (isActive ? 'border-b-2 font-semibold' : '')}
             >
               Login
             </NavLink>
-          </li>
-          <li>
+          </Box>
+          <Box as="li">
             <NavLink
               to="/"
-              className={({ isActive }) =>
-                `${isActive ? 'border-b-2 font-semibold' : ''} hover:text-gray-200`
-              }
+              className={({ isActive }) => (isActive ? 'border-b-2 font-semibold' : '')}
             >
               Get Started
             </NavLink>
-          </li>
-        </ul>
+          </Box>
+        </Flex>
       </nav>
-    </header>
+    </Flex>
   );
 }
 

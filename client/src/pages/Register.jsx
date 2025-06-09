@@ -1,16 +1,22 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
+import { Box, Heading, Text, Link } from '@chakra-ui/react';
 import RegisterForm from '../components/RegisterForm.jsx';
 
 function Register() {
   return (
-    <div className="p-4 max-w-md mx-auto">
-      <h2 className="text-xl font-bold mb-4 text-center">Register</h2>
+    <Box p={4} maxW="md" mx="auto">
+      <Heading as="h2" size="md" mb={4} textAlign="center">
+        Register
+      </Heading>
       <RegisterForm />
-      <p className="mt-2 text-center">
-        Already have an account? <Link to="/login" className="text-blue-500 underline">Login</Link>
-      </p>
-    </div>
+      <Text mt={2} textAlign="center">
+        Already have an account?{' '}
+        <Link as={RouterLink} to="/login" color="blue.500" textDecor="underline">
+          Login
+        </Link>
+      </Text>
+    </Box>
   );
 }
 

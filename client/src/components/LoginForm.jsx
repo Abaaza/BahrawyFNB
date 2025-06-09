@@ -2,6 +2,14 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { setAuth } from '../utils/auth.js';
+import {
+  Box,
+  Input,
+  Button,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+} from '@chakra-ui/react';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
@@ -32,13 +40,12 @@ function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4 bg-white shadow rounded">
-      {apiError && <p className="text-red-500">{apiError}</p>}
-      <div>
-        <label className="block mb-1">Email</label>
-        <input
+    <Box as="form" onSubmit={handleSubmit(onSubmit)} p={4} bg="white" shadow="md" rounded="md">
+      {apiError && <Box color="red.500">{apiError}</Box>}
+      <FormControl isInvalid={errors.email} mb={4}>
+        <FormLabel>Email</FormLabel>
+        <Input
           type="email"
-          className="border p-2 w-full rounded"
           {...register('email', {
             required: 'Email is required',
             pattern: {
@@ -47,21 +54,17 @@ function LoginForm() {
             },
           })}
         />
-        {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
-      </div>
-      <div>
-        <label className="block mb-1">Password</label>
-        <input
-          type="password"
-          className="border p-2 w-full rounded"
-          {...register('password', { required: 'Password is required' })}
-        />
-        {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
-      </div>
-      <button type="submit" className="w-full bg-teal-500 text-white py-2 rounded">
+        <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
+      </FormControl>
+      <FormControl isInvalid={errors.password} mb={4}>
+        <FormLabel>Password</FormLabel>
+        <Input type="password" {...register('password', { required: 'Password is required' })} />
+        <FormErrorMessage>{errors.password && errors.password.message}</FormErrorMessage>
+      </FormControl>
+      <Button type="submit" w="full" bg="teal.500" color="white">
         Login
-      </button>
-    </form>
+      </Button>
+    </Box>
   );
 }
 

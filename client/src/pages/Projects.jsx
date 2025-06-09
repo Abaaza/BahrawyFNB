@@ -1,5 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
+import {
+  Box,
+  Heading,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Link,
+} from '@chakra-ui/react';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
@@ -14,31 +25,33 @@ function Projects() {
   }, []);
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">Projects</h2>
-      <table className="min-w-full border">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border px-2 py-1 text-left">Name</th>
-            <th className="border px-2 py-1 text-left">Description</th>
-            <th className="border px-2 py-1">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
+    <Box p={4}>
+      <Heading as="h2" size="lg" mb={4}>
+        Projects
+      </Heading>
+      <Table variant="simple">
+        <Thead>
+          <Tr>
+            <Th>Name</Th>
+            <Th>Description</Th>
+            <Th textAlign="center">Actions</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
           {projects.map((p) => (
-            <tr key={p.id} className="border-b">
-              <td className="px-2 py-1 border">{p.name}</td>
-              <td className="px-2 py-1 border">{p.description}</td>
-              <td className="px-2 py-1 border text-center">
-                <Link to={`/projects/${p.id}`} className="text-blue-500 underline">
+            <Tr key={p.id}>
+              <Td>{p.name}</Td>
+              <Td>{p.description}</Td>
+              <Td textAlign="center">
+                <Link as={RouterLink} to={`/projects/${p.id}`} color="blue.500" textDecor="underline">
                   View
                 </Link>
-              </td>
-            </tr>
+              </Td>
+            </Tr>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </Tbody>
+      </Table>
+    </Box>
   );
 }
 
