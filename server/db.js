@@ -3,6 +3,7 @@ const Project = require('./models/Project');
 const Case = require('./models/Case');
 const Review = require('./models/Review');
 const ClinicalStatement = require('./models/ClinicalStatement');
+const Booking = require('./models/Booking');
 
 async function getUsers() {
   return User.find().lean();
@@ -86,6 +87,21 @@ async function addClinicalStatement(statement) {
   return doc.toObject();
 }
 
+async function addBooking(booking) {
+  const doc = await Booking.create(booking);
+  return doc.toObject();
+}
+
+async function getBookingsForSpecialist(specialistId, start, end) {
+  const query = { specialistId };
+  if (start || end) {
+    query.datetime = {};
+    if (start) query.datetime.$gte = new Date(start);
+    if (end) query.datetime.$lt = new Date(end);
+  }
+  return Booking.find(query).lean();
+}
+
 module.exports = {
   getUsers,
   addUser,
@@ -106,4 +122,6 @@ module.exports = {
   updateReview,
   getClinicalStatements,
   addClinicalStatement,
+  addBooking,
+  getBookingsForSpecialist,
 };

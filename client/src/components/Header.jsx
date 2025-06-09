@@ -65,6 +65,14 @@ function Header({ onNavigate }) {
           </Box>
           <Box as="li">
             <NavLink
+              to="/booking"
+              className={({ isActive }) => (isActive ? 'border-b-2 font-semibold' : '')}
+            >
+              Booking
+            </NavLink>
+          </Box>
+          <Box as="li">
+            <NavLink
               to="/dashboard"
               className={({ isActive }) => (isActive ? 'border-b-2 font-semibold' : '')}
             >
