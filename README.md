@@ -17,6 +17,10 @@ These values are for testing only.
 - `GET /users` – list all users
 - `POST /users` – add a new user (`{ username, password }`)
 
+### Authentication
+- `POST /auth/register` – create a new account (`{ name, email, password, role }`)
+- `POST /auth/login` – obtain a JWT (`{ email, password }`)
+
 ### Projects
 - `GET /projects` – list all projects
 - `POST /projects` – add a new project (`{ name, description }`)

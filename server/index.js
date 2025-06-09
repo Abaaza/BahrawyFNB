@@ -3,6 +3,9 @@ const cors = require('cors');
 const serverless = require('serverless-http');
 const crypto = require('crypto');
 
+const { router: authRouter } = require('./auth');
+const authenticate = require('./authMiddleware');
+
 const {
   getUsers,
   addUser,
@@ -18,11 +21,18 @@ const {
 
 const app = express();
 const tokens = new Map();
-
 app.use(cors());
 app.use(express.json());
 
-// --- Auth Middleware ---
+// --- Auth Routes (JWT based) ---
+app.use('/auth', authRouter);
+
+// Example protected route using JWT middleware
+app.get('/protected', requireAuth, (req, res) => {
+  res.json({ message: `Hello ${req.user.role}` });
+});
+
+// --- Auth Middleware (legacy Map based for /portal routes) ---
 function auth(req, res, next) {
   const header = req.headers.authorization || '';
   const token = header.replace('Bearer ', '');
@@ -33,6 +43,9 @@ function auth(req, res, next) {
   req.user = user;
   return next();
 }
+
+// JWT-based auth middleware
+const requireAuth = authenticate();
 
 // --- Signup Route ---
 app.post('/portal/signup', (req, res) => {
