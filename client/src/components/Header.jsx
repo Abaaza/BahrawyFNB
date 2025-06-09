@@ -63,20 +63,30 @@ function Header({ onNavigate }) {
             </NavLink>
           </li>
           <li>
-            <NavLink
-              to="/portal"
-              className={({ isActive }) =>
-                `${isActive ? 'border-b-2 font-semibold' : ''} hover:text-gray-200`
-              }
-            >
-              Portal
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/login"
-              className={({ isActive }) =>
-                `${isActive ? 'border-b-2 font-semibold' : ''} hover:text-gray-200`
+          <NavLink
+            to="/portal"
+            className={({ isActive }) =>
+              `${isActive ? 'border-b-2 font-semibold' : ''} hover:text-gray-200`
+            }
+          >
+            Portal
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) =>
+              `${isActive ? 'border-b-2 font-semibold' : ''} hover:text-gray-200`
+            }
+          >
+            Dashboard
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/login"
+            className={({ isActive }) =>
+              `${isActive ? 'border-b-2 font-semibold' : ''} hover:text-gray-200`
               }
             >
               Login
