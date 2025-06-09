@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getToken, getRole } from '../utils/auth.js';
+import { getApiBase } from '../utils/api.js';
 import {
   Box,
   Heading,
@@ -19,7 +20,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 
-const API_BASE = 'http://localhost:3000';
+const API_BASE = getApiBase();
 
 function Portal() {
   const [token, setToken] = useState(getToken());
