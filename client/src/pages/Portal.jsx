@@ -15,6 +15,7 @@ import {
 } from '@chakra-ui/react';
 import CaseList from '../components/CaseList.jsx';
 import FileUploader from '../components/FileUploader.jsx';
+import ReviewForm from '../components/ReviewForm.jsx';
 
 const API_BASE = getApiBase();
 
@@ -211,6 +212,9 @@ function Portal() {
               <li key={r.id}>{r.notes}</li>
             ))}
           </Box>
+          {role === 'specialist' && caseDetail.status !== 'completed' && (
+            <ReviewForm />
+          )}
         </Box>
       )}
       <CaseList
