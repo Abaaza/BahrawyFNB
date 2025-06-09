@@ -23,7 +23,7 @@ function RegisterForm() {
   const onSubmit = async (data) => {
     setApiError('');
     try {
-      const url = API_BASE ? `${API_BASE}/auth/register` : '/auth/register';
+      const url = API_BASE ? `${API_BASE}/portal/signup` : '/portal/signup';
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -42,24 +42,10 @@ function RegisterForm() {
   return (
     <Box as="form" onSubmit={handleSubmit(onSubmit)} p={4} bg="white" shadow="md" rounded="md">
       {apiError && <Box color="red.500">{apiError}</Box>}
-      <FormControl isInvalid={errors.name} mb={4}>
-        <FormLabel>Name</FormLabel>
-        <Input {...register('name', { required: 'Name is required' })} />
-        <FormErrorMessage>{errors.name && errors.name.message}</FormErrorMessage>
-      </FormControl>
-      <FormControl isInvalid={errors.email} mb={4}>
-        <FormLabel>Email</FormLabel>
-        <Input
-          type="email"
-          {...register('email', {
-            required: 'Email is required',
-            pattern: {
-              value: /^[^@\s]+@[^@\s]+\.[^@\s]+$/,
-              message: 'Invalid email',
-            },
-          })}
-        />
-        <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
+      <FormControl isInvalid={errors.username} mb={4}>
+        <FormLabel>Username</FormLabel>
+        <Input {...register('username', { required: 'Username is required' })} />
+        <FormErrorMessage>{errors.username && errors.username.message}</FormErrorMessage>
       </FormControl>
       <FormControl isInvalid={errors.password} mb={4}>
         <FormLabel>Password</FormLabel>
