@@ -11,7 +11,7 @@ import {
   MenuList,
   MenuItem,
 } from '@chakra-ui/react';
-import { ChevronDownIcon } from '@chakra-ui/icons';
+import { ChevronDownIcon } from "@chakra-ui/icons";
 
 function CaseCard({ detail, role, onClose, onAssign, children }) {
   if (!detail) return null;
